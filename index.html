@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Sex Rater — Comprehensive Performance Analysis</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>AI Sex Rater — Comprehensive Performance Analysis</h1>
+    <p class="intro">This tool provides a detailed analysis of your sexual encounter based on a variety of physiological and performance metrics. Enter accurate data below to receive a score out of 100, a breakdown of key factors, and tailored recommendations to enhance your experience. All data is processed locally in your browser, ensuring complete privacy. The scoring system uses evidence-based ranges (e.g., average erect penis length ~5.2 inches, intercourse duration 7-13 minutes) to evaluate performance objectively.</p>
+
+    <form id="sexForm">
+      <h3>Participant Details</h3>
+      <div class="form-group">
+        <label>Male Ethnicity:
+          <select name="maleEthnicity" required>
+            <option value="">Select...</option>
+            <option value="indian">Indian</option>
+            <option value="caucasian">Caucasian</option>
+            <option value="african">African</option>
+            <option value="asian">Asian</option>
+            <option value="latina">Latina/Latino</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>Female Ethnicity:
+          <select name="femaleEthnicity" required>
+            <option value="">Select...</option>
+            <option value="indian">Indian</option>
+            <option value="caucasian">Caucasian</option>
+            <option value="african">African</option>
+            <option value="asian">Asian</option>
+            <option value="latina">Latina/Latino</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>Male Age (years): <input type="number" name="maleAge" min="16" step="1" required></label>
+        <label>Female Age (years): <input type="number" name="femaleAge" min="16" step="1" required></label>
+      </div>
+
+      <h3>Body Metrics</h3>
+      <div class="form-group">
+        <label>Male Height (cm): <input type="number" name="maleHeight" min="0" step="0.1" required></label>
+        <label>Female Height (cm): <input type="number" name="femaleHeight" min="0" step="0.1" required></label>
+        <label>Male Weight (kg): <input type="number" name="maleWeight" min="0" step="0.1" required></label>
+        <label>Female Weight (kg): <input type="number" name="femaleWeight" min="0" step="0.1" required></label>
+        <label>Penis Length (inches, erect): <input type="number" name="penisLength" min="0" step="0.1" required></label>
+        <label>Penis Girth (inches, erect): <input type="number" name="penisGirth" min="0" step="0.1" required></label>
+        <label>Vaginal Depth (inches, if known): <input type="number" name="vaginalDepth" min="0" step="0.1"></label>
+      </div>
+
+      <h3>Session Metrics</h3>
+      <div class="form-group">
+        <label>Sex Duration (minutes, intercourse only): <input type="number" name="duration" min="0" step="0.1" required></label>
+        <label>Foreplay Duration (minutes): <input type="number" name="foreplay" min="0" step="0.1" required></label>
+        <label>Male Orgasms (count): <input type="number" name="maleOrgasms" min="0" step="1" required></label>
+        <label>Female Orgasms (count): <input type="number" name="femaleOrgasms" min="0" step="1" required></label>
+        <label>Ejaculation Volume (ml): <input type="number" name="ejaculationVolume" min="0" step="0.1" required></label>
+        <label>Lubricant Used (ml): <input type="number" name="lubricantUsed" min="0" step="0.1"></label>
+        <label>Positions Tried (count): <input type="number" name="positions" min="0" step="1" required></label>
+        <label>Thrusting Speed (per second): <input type="number" name="thrustSpeed" min="0" step="0.1"></label>
+        <label>Room Temperature (°C): <input type="number" name="roomTemp" min="0" step="0.1"></label>
+        <label>Average Penetration Depth (cm): <input type="number" name="penetrationDepth" min="0" step="0.1"></label>
+        <label>Refractory Time (minutes): <input type="number" name="refractoryTime" min="0" step="0.1"></label>
+        <label>Condom Used:
+          <select name="condomUsed">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </label>
+      </div>
+
+      <button type="submit">Analyze Performance</button>
+    </form>
+
+    <div id="result" class="result"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Sex Rater — Comprehensive Performance Analysis</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>AI Sex Rater — Comprehensive Performance Analysis</h1>
+    <p class="intro">This tool provides a detailed analysis of your sexual encounter based on a variety of physiological and performance metrics. Enter accurate data below to receive a score out of 100, a breakdown of key factors, and tailored recommendations to enhance your experience. All data is processed locally in your browser, ensuring complete privacy. The scoring system uses evidence-based ranges (e.g., average erect penis length ~5.2 inches, intercourse duration 7-13 minutes) to evaluate performance objectively.</p>
+
+    <form id="sexForm">
+      <h3>Participant Details</h3>
+      <div class="form-group">
+        <label>Male Ethnicity:
+          <select name="maleEthnicity" required>
+            <option value="">Select...</option>
+            <option value="indian">Indian</option>
+            <option value="caucasian">Caucasian</option>
+            <option value="african">African</option>
+            <option value="asian">Asian</option>
+            <option value="latina">Latina/Latino</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>Female Ethnicity:
+          <select name="femaleEthnicity" required>
+            <option value="">Select...</option>
+            <option value="indian">Indian</option>
+            <option value="caucasian">Caucasian</option>
+            <option value="african">African</option>
+            <option value="asian">Asian</option>
+            <option value="latina">Latina/Latino</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label>Male Age (years): <input type="number" name="maleAge" min="16" step="1" required></label>
+        <label>Female Age (years): <input type="number" name="femaleAge" min="16" step="1" required></label>
+      </div>
+
+      <h3>Body Metrics</h3>
+      <div class="form-group">
+        <label>Male Height (cm): <input type="number" name="maleHeight" min="0" step="0.1" required></label>
+        <label>Female Height (cm): <input type="number" name="femaleHeight" min="0" step="0.1" required></label>
+        <label>Male Weight (kg): <input type="number" name="maleWeight" min="0" step="0.1" required></label>
+        <label>Female Weight (kg): <input type="number" name="femaleWeight" min="0" step="0.1" required></label>
+        <label>Penis Length (inches, erect): <input type="number" name="penisLength" min="0" step="0.1" required></label>
+        <label>Penis Girth (inches, erect): <input type="number" name="penisGirth" min="0" step="0.1" required></label>
+        <label>Vaginal Depth (inches, if known): <input type="number" name="vaginalDepth" min="0" step="0.1"></label>
+      </div>
+
+      <h3>Session Metrics</h3>
+      <div class="form-group">
+        <label>Sex Duration (minutes, intercourse only): <input type="number" name="duration" min="0" step="0.1" required></label>
+        <label>Foreplay Duration (minutes): <input type="number" name="foreplay" min="0" step="0.1" required></label>
+        <label>Male Orgasms (count): <input type="number" name="maleOrgasms" min="0" step="1" required></label>
+        <label>Female Orgasms (count): <input type="number" name="femaleOrgasms" min="0" step="1" required></label>
+        <label>Ejaculation Volume (ml): <input type="number" name="ejaculationVolume" min="0" step="0.1" required></label>
+        <label>Lubricant Used (ml): <input type="number" name="lubricantUsed" min="0" step="0.1"></label>
+        <label>Positions Tried (count): <input type="number" name="positions" min="0" step="1" required></label>
+        <label>Thrusting Speed (per second): <input type="number" name="thrustSpeed" min="0" step="0.1"></label>
+        <label>Room Temperature (°C): <input type="number" name="roomTemp" min="0" step="0.1"></label>
+        <label>Average Penetration Depth (cm): <input type="number" name="penetrationDepth" min="0" step="0.1"></label>
+        <label>Refractory Time (minutes): <input type="number" name="refractoryTime" min="0" step="0.1"></label>
+        <label>Condom Used:
+          <select name="condomUsed">
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+        </label>
+      </div>
+
+      <button type="submit">Analyze Performance</button>
+    </form>
+
+    <div id="result" class="result"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
