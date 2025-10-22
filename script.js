@@ -4,216 +4,443 @@ document.getElementById("sexForm").addEventListener("submit", function(e) {
   const form = new FormData(e.target);
   const data = Object.fromEntries(form.entries());
 
-  // Convert numbers
+  // Convert numbers - Ensure all numeric fields are parsed correctly
   for (let key in data) {
     if (!isNaN(data[key]) && data[key] !== '') {
       data[key] = parseFloat(data[key]);
     } else if (data[key] === '') {
-      data[key] = 0; // Default empty numbers to 0
+      data[key] = 0;
     }
   }
 
-  // Input validation
-  if (data.maleAge < 16 || data.femaleAge < 16) {
-    alert("Ages must be 16 or older.");
+  // Input validation with detailed feedback
+  if (data.maleAge < 18 || data.femaleAge < 18) {
+    alert("Ages must be 18 or older for accurate adult analysis.");
     return;
   }
-  if (data.maleWeight <= 0 || data.femaleWeight <= 0) {
-    alert("Weights must be positive.");
+  if (data.maleWeight <= 30 || data.femaleWeight <= 30) {
+    alert("Weights must be realistic (above 30 kg for adults).");
     return;
   }
-  if (data.maleHeight <= 0 || data.femaleHeight <= 0) {
-    alert("Heights must be positive.");
+  if (data.maleHeight <= 100 || data.femaleHeight <= 100) {
+    alert("Heights must be in realistic range (above 100 cm for adults).");
     return;
   }
-  if (data.penisLength < 0 || data.penisGirth < 0) {
-    alert("Penis measurements must be non-negative.");
+  if (data.penisLength < 3 || data.penisLength > 10) {
+    alert("Penis length should be in realistic range (3-10 inches erect).");
+    return;
+  }
+  if (data.penisGirth < 3 || data.penisGirth > 7) {
+    alert("Penis girth should be in realistic range (3-7 inches erect).");
     return;
   }
   if (data.duration < 0 || data.foreplay < 0) {
     alert("Durations must be non-negative.");
     return;
   }
+  if (data.thrustSpeed > 200) {
+    alert("Thrusting speed above 200/min is unrealistic; typical 75-90 thrusts per minute.");
+    return;
+  }
+  if (data.ejaculationVolume > 10) {
+    alert("Ejaculation volume above 10 ml is unusually high; average is 1.5-5 ml.");
+    return;
+  }
+  if (data.positions > 10) {
+    alert("Positions tried above 10 may be exaggerated; typical sessions involve 3-5.");
+    return;
+  }
 
-  // Calculate derived metrics
+  // Calculate comprehensive derived metrics
   data.maleBMI = data.maleWeight / ((data.maleHeight / 100) ** 2);
   data.femaleBMI = data.femaleWeight / ((data.femaleHeight / 100) ** 2);
+  
   if (isNaN(data.thrustSpeed) || data.thrustSpeed === 0) {
-    data.thrustSpeed = 2; // Default 2 thrusts/sec (120/min, within 100-150 range)
+    data.thrustSpeed = 80;
   }
-  data.thrusts = data.thrustSpeed * data.duration * 60;
-  data.avgHeartRate = data.avgHeartRate || (70 + (data.duration > 10 ? 50 : 30)); // Estimate
-  data.calories = data.calories || ((data.maleWeight + data.femaleWeight) / 2) * 3.5 * (data.duration / 60); // MET ~3.5
+  
+  data.thrusts = data.thrustSpeed * data.duration;
+  
+  if (isNaN(data.avgHeartRate) || data.avgHeartRate === 0) {
+    data.avgHeartRate = 80 + (data.duration > 5 ? 40 : 20) + (data.thrustSpeed > 90 ? 10 : 0) + (data.positions > 3 ? 5 : 0);
+  }
+  
+  data.calories = ((data.maleWeight * 4.5 + data.femaleWeight * 3.5) / 2) * data.duration / 60;
+  data.totalSessionTime = data.foreplay + data.duration + (data.refractoryTime || 0);
+  data.arousalIndex = (data.foreplay / 12) * (data.femaleOrgasms + 1) * (data.lubricantUsed < 5 ? 1.2 : 1);
+  data.arousalIndex *= (data.penetrationDepth > 4 ? 1.1 : 1);
+  data.staminaIndex = data.duration * data.thrustSpeed / 100 * (data.maleAge < 30 ? 1.1 : (data.maleAge < 50 ? 1 : 0.9));
+  data.intensityIndex = (data.thrustSpeed / 80) * (data.positions / 3) * (data.duration / 5.4);
+  data.satisfactionIndex = (data.femaleOrgasms * 2 + data.maleOrgasms) / (data.duration > 0 ? data.duration : 1) * 10;
+  
+  // Additional advanced metrics
+  data.enduranceRating = (data.duration / 5.4) * (data.thrusts / 356) * 100;
+  data.rhythmConsistency = data.thrustSpeed > 0 ? Math.min(100, (80 / Math.abs(data.thrustSpeed - 80 + 1)) * 100) : 50;
+  data.physicalSynergy = 100 - (Math.abs(data.maleBMI - data.femaleBMI) * 5) - (Math.abs(data.maleAge - data.femaleAge) * 0.5);
+  data.orgasmEfficiency = data.duration > 0 ? ((data.femaleOrgasms + data.maleOrgasms) / data.duration) * 100 : 0;
+  data.cardiovascularLoad = (data.avgHeartRate / 130) * (data.calories / 150) * 100;
+  data.recoveryEfficiency = data.refractoryTime > 0 ? (15 / data.refractoryTime) * 100 : 100;
+  data.positionDiversity = (data.positions / 5) * 100;
+  data.penetrationEfficiency = data.vaginalDepth ? Math.max(0, 100 - (Math.abs(data.penetrationDepth - data.vaginalDepth) * 20)) : 85;
 
-  // --- Enhanced AI Scoring System ---
-  // Each category max 20 points, total 100, normalized to scientific averages
-  let sizeScore = 0;
-  // Penis size: avg length 5.2 in, girth 4.6 in (studies like Veale et al., 2015)
-  const lengthDiff = Math.abs(data.penisLength - 5.2);
-  sizeScore += Math.max(0, 10 * (1 - lengthDiff / 2)); // Linear drop-off within 2 inches
-  const girthDiff = Math.abs(data.penisGirth - 4.6);
-  sizeScore += Math.max(0, 10 * (1 - girthDiff / 1.5)); // Girth range ~3-6 in
-  if (data.vaginalDepth && data.penisLength > data.vaginalDepth) sizeScore -= Math.min((data.penisLength - data.vaginalDepth) * 2, 5); // Mismatch penalty
-  if (data.maleEthnicity === "african") sizeScore += 1; // Slight avg size increase
-  if (data.maleEthnicity === "asian") sizeScore -= 0.5; // Slight avg size decrease
-  sizeScore = Math.max(0, Math.min(20, Math.round(sizeScore)));
+  // Age and ethnicity-based adjustments
+  const avgRefractory = data.maleAge < 30 ? 15 : (data.maleAge < 40 ? 20 : (data.maleAge < 50 ? 30 : (data.maleAge < 60 ? 40 : 60)));
+  const staminaAdjustment = data.maleAge < 30 ? 1.2 : (data.maleAge < 50 ? 1 : (data.maleAge < 60 ? 0.9 : 0.8));
+  const orgasmAdjustment = data.femaleAge < 30 ? 1.1 : (data.femaleAge < 50 ? 1 : 0.9);
+  const ethnicSizeAdjustment = data.maleEthnicity === "african" ? 0.3 : (data.maleEthnicity === "asian" ? -0.2 : 0);
+  const ethnicDurationAdjustment = data.maleEthnicity === "indian" ? 1.05 : 1;
 
-  let durationScore = 0;
-  // Ideal intercourse 7-13 min, foreplay 10-20 min (Corty & Guardiani, 2008)
-  const idealDurationMin = 7, idealDurationMax = 13;
-  const durationCenter = (idealDurationMin + idealDurationMax) / 2;
-  durationScore += Math.max(0, 10 * (1 - Math.abs(data.duration - durationCenter) / ((idealDurationMax - idealDurationMin) / 2)));
-  const idealForeplayMin = 10, idealForeplayMax = 20;
-  const foreplayCenter = (idealForeplayMin + idealForeplayMax) / 2;
-  durationScore += Math.max(0, 10 * (1 - Math.abs(data.foreplay - foreplayCenter) / ((idealForeplayMax - idealForeplayMin) / 2)));
-  if (data.foreplay < 5 && data.femaleOrgasms === 0) durationScore -= 3; // Penalty for insufficient foreplay
-  durationScore = Math.max(0, Math.min(20, Math.round(durationScore)));
+  // Scoring functions with enhanced detail
+  function calculateSizeScore() {
+    let score = 0;
+    const avgLength = 5.16;
+    const lengthDiff = Math.abs(data.penisLength - avgLength);
+    score += Math.max(0, 10 * (1 - lengthDiff / 2.5));
+    const avgGirth = 4.59;
+    const girthDiff = Math.abs(data.penisGirth - avgGirth);
+    score += Math.max(0, 10 * (1 - girthDiff / 1.5));
+    if (data.vaginalDepth && data.penisLength > data.vaginalDepth + 2) {
+      score -= Math.min((data.penisLength - data.vaginalDepth) * 1.2, 5);
+    }
+    score += ethnicSizeAdjustment;
+    if (data.penisLength > 6 && data.femaleEthnicity === "asian") score -= 0.5;
+    return Math.max(0, Math.min(20, Math.round(score)));
+  }
 
-  let orgasmScore = 0;
-  orgasmScore += Math.min(data.maleOrgasms * 4, 8); // Max 2 reasonable
-  orgasmScore += Math.min(data.femaleOrgasms * 6, 12); // Female emphasis (only ~25% women orgasm from penetration alone)
-  if (data.femaleOrgasms === 0 && data.foreplay < 10) orgasmScore -= 3; // Lack of foreplay impacts female orgasm
-  if (data.maleOrgasms > 2 && data.refractoryTime > 20) orgasmScore -= 2; // Multiple male orgasms with long refractory less ideal
-  orgasmScore = Math.max(0, Math.min(20, Math.round(orgasmScore)));
+  function calculateDurationScore() {
+    let score = 0;
+    const medianDuration = 5.4;
+    const desiredMin = 7, desiredMax = 13;
+    const durationCenter = (desiredMin + desiredMax) / 2;
+    score += Math.max(0, 10 * (1 - Math.abs(data.duration - durationCenter) / ((desiredMax - desiredMin) / 2))) * staminaAdjustment * ethnicDurationAdjustment;
+    const avgForeplay = 12;
+    const foreplayDesiredCenter = 17.5;
+    score += Math.max(0, 10 * (1 - Math.abs(data.foreplay - foreplayDesiredCenter) / 5));
+    if (data.foreplay < 12 && data.femaleOrgasms < 1) score -= 3;
+    if (data.duration < 2) score -= 3;
+    if (data.duration > 20) score += 1;
+    if (data.femaleEthnicity === "indian" && data.duration > 10) score += 1;
+    return Math.max(0, Math.min(20, Math.round(score)));
+  }
 
-  let intensityScore = 0;
-  intensityScore += Math.min(data.positions / 5 * 5, 5); // 3-5+ ideal
-  const thrustsPerMin = data.thrusts / data.duration;
-  intensityScore += Math.max(0, 5 * (1 - Math.abs(thrustsPerMin - 125) / 75)); // Center at 125/min
-  intensityScore += Math.min(data.ejaculationVolume / 5 * 4, 4); // Avg 3-5 ml
-  intensityScore += Math.min((data.penetrationDepth || 0) / 12 * 3, 3); // Avg vaginal depth 9-10 cm
-  if (data.vaginalDepth && data.penetrationDepth > data.vaginalDepth * 2.54) intensityScore -= 3; // Discomfort if too deep
-  if (data.lubricantUsed > 20) intensityScore -= 2; // Excess lube may indicate arousal issues
-  intensityScore = Math.max(0, Math.min(20, Math.round(intensityScore)));
+  function calculateOrgasmScore() {
+    let score = 0;
+    score += Math.min(data.maleOrgasms * 4, 8);
+    score += Math.min(data.femaleOrgasms * 6, 12) * orgasmAdjustment;
+    if (data.femaleOrgasms === 0) score -= 3;
+    if (data.femaleOrgasms >= 2) score += 2;
+    if (data.maleOrgasms > 1 && data.refractoryTime > avgRefractory + 15) score -= 2;
+    if (data.femaleOrgasms > data.maleOrgasms) score += 1;
+    if (data.femaleEthnicity === "latina" && data.femaleOrgasms > 1) score += 1;
+    return Math.max(0, Math.min(20, Math.round(score)));
+  }
 
-  let healthScore = 0;
-  healthScore += Math.min((data.avgHeartRate - 80) / 50 * 5, 5); // Cardio benefit
-  healthScore += Math.min(data.calories / 300 * 5, 5); // ~200-300 kcal ideal
-  if (data.refractoryTime < 15) healthScore += 4; // Quick recovery
-  else if (data.refractoryTime < 25) healthScore += 2;
-  if (data.roomTemp > 18 && data.roomTemp < 24) healthScore += 3; // Comfort zone
-  if (data.condomUsed === 1) healthScore += 3; // Safety bonus
-  // BMI: ideal 18.5-24.9, penalties for extremes
-  if (data.maleBMI < 18.5 || data.maleBMI > 30) healthScore -= Math.min(Math.abs(data.maleBMI - 21.7) / 5, 3);
-  if (data.femaleBMI < 18.5 || data.femaleBMI > 30) healthScore -= Math.min(Math.abs(data.femaleBMI - 21.7) / 5, 3);
-  healthScore = Math.max(0, Math.min(20, Math.round(healthScore)));
+  function calculateIntensityScore() {
+    let score = 0;
+    score += Math.min(data.positions * 1.5, 6);
+    const thrustsPerMin = data.thrustSpeed;
+    score += Math.max(0, 6 * (1 - Math.abs(thrustsPerMin - 80) / 40));
+    score += Math.min((data.ejaculationVolume - 1.5) / 3.5 * 4, 4);
+    score += Math.min((data.penetrationDepth || 0) / 5 * 4, 4);
+    if (data.vaginalDepth && data.penetrationDepth > data.vaginalDepth + 1.5) score -= 3;
+    if (data.lubricantUsed > 10) score -= 1.5;
+    if (data.thrusts > 400) score += 1;
+    if (data.maleEthnicity === "african" && data.thrustSpeed > 85) score += 1;
+    return Math.max(0, Math.min(20, Math.round(score)));
+  }
 
-  let compatScore = 20;
-  // Weight ratio: ideal 1.1-1.4; large diffs affect comfort
-  const weightRatio = data.maleWeight / data.femaleWeight;
-  const idealWeightRatio = 1.25;
-  if (weightRatio < 1.0 || weightRatio > 1.6) compatScore -= Math.min(Math.abs(weightRatio - idealWeightRatio) * 5, 5);
-  if (weightRatio > 1.8) compatScore -= 4; // Male too heavy
-  if (weightRatio < 0.9) compatScore -= 3; // Female significantly heavier
-  // Height ratio: ideal 1.05-1.25
-  const heightRatio = data.maleHeight / data.femaleHeight;
-  const idealHeightRatio = 1.15;
-  if (heightRatio < 1.05 || heightRatio > 1.25) compatScore -= Math.min(Math.abs(heightRatio - idealHeightRatio) * 6, 4);
-  // Age difference
-  const ageDiff = Math.abs(data.maleAge - data.femaleAge);
-  if (ageDiff > 5) compatScore -= Math.min((ageDiff / 5) * 1.5, 4);
-  // BMI compatibility
-  const bmiDiff = Math.abs(data.maleBMI - data.femaleBMI);
-  if (bmiDiff > 5) compatScore -= Math.min((bmiDiff / 5) * 1.5, 3);
-  // Ethnicity compatibility (light, based on small physiological/cultural diffs)
-  if (data.maleEthnicity === "african" && data.femaleEthnicity !== "african") compatScore += 1; // Slight size advantage
-  if (data.maleEthnicity === "asian" && data.femaleEthnicity !== "asian") compatScore -= 0.5;
-  if (data.femaleEthnicity === "latina") compatScore += 1.5; // Cultural preference for passion
-  if (data.femaleEthnicity === "indian") compatScore += 1; // Emotional connection emphasis
-  compatScore = Math.max(0, Math.min(20, Math.round(compatScore)));
+  function calculateHealthScore() {
+    let score = 0;
+    score += Math.min((data.avgHeartRate - 90) / 40 * 5, 5);
+    score += Math.min(data.calories / 150 * 3, 3);
+    if (data.refractoryTime < avgRefractory) score += 3;
+    else if (data.refractoryTime < avgRefractory + 15) score += 1;
+    else score -= 2;
+    if (data.roomTemp >= 20 && data.roomTemp <= 24) score += 3;
+    else if (data.roomTemp < 18 || data.roomTemp > 26) score -= 2;
+    if (data.condomUsed === 1) score += 3;
+    const bmiPenalty = (bmi) => {
+      if (bmi < 18.5) return 1.5;
+      if (bmi > 25 && bmi <= 30) return 1;
+      if (bmi > 30) return 3;
+      return 0;
+    };
+    score -= bmiPenalty(data.maleBMI) + bmiPenalty(data.femaleBMI);
+    if (data.avgHeartRate > 130) score += 1;
+    if (data.femaleEthnicity === "indian" && data.roomTemp > 22) score += 0.5;
+    return Math.max(0, Math.min(20, Math.round(score)));
+  }
 
-  // Total score
+  function calculateCompatScore() {
+    let score = 20;
+    const heightRatio = data.maleHeight / data.femaleHeight;
+    score -= Math.min(Math.abs(heightRatio - 1.09) * 12, 3.5);
+    const weightRatio = data.maleWeight / data.femaleWeight;
+    score -= Math.min(Math.abs(weightRatio - 1.3) * 10, 3.5);
+    const ageDiff = Math.abs(data.maleAge - data.femaleAge);
+    if (ageDiff > 5) score -= Math.min((ageDiff / 5) * 1.2, 3);
+    if (ageDiff > 15) score -= 1;
+    const bmiDiff = Math.abs(data.maleBMI - data.femaleBMI);
+    if (bmiDiff > 5) score -= Math.min((bmiDiff / 5) * 1, 2);
+    if (data.maleEthnicity !== data.femaleEthnicity) score -= 0.5;
+    if (data.maleEthnicity === data.femaleEthnicity && data.maleEthnicity === "indian") score += 1;
+    return Math.max(0, Math.min(20, Math.round(score)));
+  }
+
+  const sizeScore = calculateSizeScore();
+  const durationScore = calculateDurationScore();
+  const orgasmScore = calculateOrgasmScore();
+  const intensityScore = calculateIntensityScore();
+  const healthScore = calculateHealthScore();
+  const compatScore = calculateCompatScore();
+
   const totalScore = sizeScore + durationScore + orgasmScore + intensityScore + healthScore + compatScore;
   const finalScore = Math.max(0, Math.min(100, Math.round(totalScore)));
 
-  // --- Comprehensive Suggestions ---
+  // Enhanced suggestions with extensive detail
   let tips = [];
-  // Duration and foreplay
-  if (data.foreplay < 5) tips.push("Foreplay under 5 minutes is too short; aim for 10-20 minutes with kissing, touching, or oral to boost arousal and natural lubrication.");
-  else if (data.foreplay < 10) tips.push("Foreplay of 5-10 minutes is decent, but 10-20 minutes enhances emotional and physical connection, especially for female arousal.");
-  if (data.duration < 3) tips.push("Intercourse under 3 minutes may feel rushed; practice Kegel exercises, breathing techniques, or edging to extend to 7-13 minutes.");
-  else if (data.duration < 7) tips.push("Aim for 7-13 minutes of intercourse, considered ideal by studies; cardio and stamina training can help.");
-  else if (data.duration > 13) tips.push("Over 13 minutes is great for stamina but check for partner comfort; prolonged sessions may cause irritation without sufficient lube.");
-  if (data.duration > 20) tips.push("Intercourse over 20 minutes is exceptional but risks fatigue; vary intensity and ensure adequate hydration.");
+  
+  // Foreplay recommendations
+  if (data.foreplay < 12) {
+    tips.push("Foreplay duration falls below the research-backed average of 11-12 minutes, which studies indicate is critical for optimal female arousal. Women typically require 13.4 minutes to reach orgasm during partnered activity. Extending foreplay to 15-20 minutes with focused clitoral stimulation, sensual caresses along erogenous zones, and gradual intensity building can increase female orgasm rates from the current 46% baseline to 60-70%. This extended arousal period allows natural lubrication to increase, vaginal tissues to engorge fully, and psychological readiness to peak, creating an optimal foundation for deeper pleasure and more intense climactic responses.");
+  } else if (data.foreplay > 20) {
+    tips.push("Extended foreplay beyond 20 minutes demonstrates thorough attention to arousal, though it may lead to partner fatigue or plateau effects where further stimulation yields diminishing returns. Research suggests 15-20 minutes represents the sweet spot for most couples. Consider reading physiological arousal cues—flushed skin, increased breathing rate, natural lubrication, pelvic tilting—to time the transition to penetration optimally when desire peaks rather than extending arbitrarily.");
+  }
+  if (data.foreplay < 15 && data.femaleOrgasms === 0) {
+    tips.push("The combination of insufficient foreplay (<15 minutes) and absence of female orgasm strongly correlates with the documented orgasm gap in heterosexual encounters where 35-54% of women report no climax. Studies consistently show clitoral stimulation during foreplay and intercourse dramatically improves outcomes. Incorporate direct or indirect clitoral touch, oral stimulation, or manual techniques to awaken heightened sensitivity, allowing arousal to cascade through progressive waves of mounting pleasure.");
+  }
 
-  // Orgasms
-  if (data.femaleOrgasms === 0) tips.push("No female orgasms? Only ~25% women orgasm from penetration alone; focus on clitoral stimulation, oral sex, or positions like cowgirl where she controls pace.");
-  if (data.femaleOrgasms === 1) tips.push("One female orgasm is good; aim for multiple by extending foreplay and incorporating manual or toy stimulation.");
-  if (data.maleOrgasms === 0) tips.push("No male orgasm? Stress or fatigue may be factors; ensure relaxation and try varying stimulation techniques.");
-  if (data.maleOrgasms > 2 && data.refractoryTime > 20) tips.push("Multiple male orgasms with long refractory time may indicate overexertion; pace sessions to maintain energy.");
+  // Duration recommendations
+  if (data.duration < 5.4) {
+    tips.push("Intercourse duration registers below the global median of 5.4 minutes documented in Waldinger's multinational study. While personal preferences vary, most couples report satisfaction in the 7-13 minute range. To extend duration naturally, practice pelvic floor exercises (Kegels) which strengthen the pubococcygeus muscle and enhance ejaculatory control. Edging techniques—approaching climax then reducing stimulation—can train neurological pathways for prolonged arousal. Deep breathing exercises help manage autonomic nervous system responses that trigger orgasm. These methods allow rhythmic thrusting to build sustained waves of pleasure rather than rushing toward premature culmination.");
+  } else if (data.duration > 13) {
+    tips.push("Sustained intercourse exceeding 13 minutes indicates exceptional stamina and cardiovascular fitness, placing you in the upper percentile of duration studies. While impressive, monitor for potential friction-related discomfort or vaginal irritation that can occur during extended sessions. Ensure adequate lubrication—natural or supplemental—and vary rhythms between vigorous and gentle movements to maintain pleasure without causing tissue sensitivity. This prolonged union allows exploration of multiple positions and depth variations for comprehensive stimulation.");
+  }
+  if (data.duration < 3 && data.maleAge < 40) {
+    tips.push("Very brief duration under 3 minutes in younger men may suggest premature ejaculation, defined as persistent inability to delay ejaculation causing distress. If this pattern is consistent, consider consulting a healthcare professional or sex therapist for evidence-based interventions. Behavioral techniques like the squeeze method or start-stop technique can retrain ejaculatory reflexes. SSRIs or topical desensitizing agents may be prescribed. Practice mindful awareness of arousal levels to hover in the plateau phase longer, savoring each rhythmic thrust like controlled piston movements that build pressure gradually.");
+  }
 
-  // Intensity
-  if (data.positions < 2) tips.push("Fewer than 2 positions limits variety; try missionary, doggy, or cowgirl to adapt to body differences and enhance stimulation.");
-  else if (data.positions < 4) tips.push("2-3 positions are solid; aim for 4-5 (e.g., spooning, reverse cowgirl) to target varied sensations and accommodate height/weight gaps.");
-  if (thrustsPerMin < 80) tips.push("Thrusting below 80/min is slow; increase to 100-150/min for intensity, varying speed for partner preference.");
-  else if (thrustsPerMin > 200) tips.push("Thrusting over 200/min is intense but may overwhelm; balance with slower, deeper thrusts for control.");
-  if (data.ejaculationVolume < 2) tips.push("Ejaculation below 2 ml is low; hydrate well, consume zinc-rich foods (oysters, pumpkin seeds), and space sessions to reach 3-5 ml average.");
-  if (data.penetrationDepth > (data.vaginalDepth * 2.54 || 12)) tips.push("Penetration depth exceeds average vaginal depth (~9-10 cm); use shallower thrusts or positions like spooning to avoid discomfort.");
-  if (data.lubricantUsed > 20) tips.push("Over 20 ml lube suggests low natural arousal; extend foreplay with sensual touch or try water-based lubes for comfort.");
+  // Orgasm gap recommendations
+  if (data.femaleOrgasms === 0) {
+    tips.push("Absence of female orgasm reflects the persistent orgasm gap documented across 2020-2024 research showing 35-54% of women in heterosexual encounters don't climax compared to 70-85% of men. Closing this gap requires understanding that 75% of women need direct or indirect clitoral stimulation during penetration. Try positions like woman-on-top or modified missionary with pelvic angling that allows clitoral contact. Use fingers or toys during thrusting to maintain consistent stimulation. Communicate openly about pressure, rhythm, and location preferences to guide her toward peaks of bliss where muscular contractions pulse through her entire pelvic region in cascading waves of release.");
+  }
+  if (data.femaleOrgasms === 1) {
+    tips.push("Achieving one female orgasm is positive progress toward closing the orgasm gap, yet research shows women are physiologically capable of multiple sequential orgasms without the refractory period men experience. After initial climax, continue gentle stimulation as sensitivity temporarily peaks, then gradually rebuild intensity. The second orgasm often arrives faster and more intensely due to sustained pelvic blood flow and neurological priming. Vary techniques between clitoral, G-spot, and combined stimulation to build cascading waves of pleasure that surge through her nervous system.");
+  }
+  if (data.maleOrgasms === 0) {
+    tips.push("Male anorgasmia—inability to reach orgasm despite adequate stimulation—is unusual given 70-85% orgasm rates in heterosexual encounters. Psychological factors like performance anxiety, stress, or relationship issues commonly contribute. Physical causes include certain medications (SSRIs, antihypertensives), hormonal imbalances, or neurological conditions. Focus on relaxation, removing pressure to perform, and exploring what intensifies arousal. Ensure adequate stimulation intensity and duration. If persistent, consult a healthcare provider to rule out medical causes and reach the explosive culmination your body desires.");
+  }
+  if (data.femaleOrgasms < data.maleOrgasms) {
+    tips.push("The orgasm disparity detected—where male climaxes outnumber female—epitomizes the well-documented pleasure gap requiring conscious prioritization of female pleasure. Research shows when female orgasm precedes or coincides with male orgasm, mutual satisfaction ratings increase significantly. Commit to ensuring her climax before penetration through oral or manual stimulation, or during intercourse through positions and techniques that provide consistent clitoral access. This creates a symphony of shared ecstasy where both partners experience peaks in harmonious rhythm.");
+  }
 
-  // Health
-  if (data.refractoryTime > 25) tips.push("Refractory time over 25 minutes is long, especially if under 30 years old; improve with cardio, diet (zinc, L-arginine), or consult a doctor.");
-  else if (data.refractoryTime > 15) tips.push("Refractory time of 15-25 minutes is average; reduce with pelvic floor exercises or better hydration.");
-  if (data.roomTemp < 18) tips.push("Room below 18°C may feel chilly; aim for 18-24°C to keep muscles relaxed and enhance comfort.");
-  else if (data.roomTemp > 24) tips.push("Room above 24°C may cause overheating; maintain 18-24°C and stay hydrated.");
-  if (data.condomUsed === 1) tips.push("Condom use promotes safety and prevents STIs/pregnancy; try ultra-thin condoms or add lube inside for better sensation.");
-  if (data.condomUsed === 0) tips.push("No condom? Ensure mutual STI testing and contraception; unprotected sex increases risks.");
-  if (data.maleBMI < 18.5) tips.push("Male BMI below 18.5 suggests underweight; a balanced diet with protein and healthy fats boosts energy and performance.");
-  if (data.maleBMI > 30) tips.push("Male BMI over 30 indicates obesity; weight management through diet and exercise improves stamina and reduces fatigue.");
-  if (data.femaleBMI < 18.5) tips.push("Female BMI below 18.5 may reduce energy; ensure adequate nutrition to support physical exertion.");
-  if (data.femaleBMI > 30) tips.push("Female BMI over 30 can affect comfort; focus on low-impact positions and consider fitness goals.");
+  // Intensity recommendations
+  if (data.positions < 3) {
+    tips.push("Limited position variety restricts the range of sensory experiences and anatomical angles available for stimulation. Research suggests 3-5 position changes during a session optimizes novelty while maintaining flow. Cowgirl positions grant women control over depth, angle, and clitoral contact. Doggy style allows deeper penetration and G-spot targeting. Spooning provides intimacy with gentle rocking motions. Standing or edge-of-bed positions create different gravitational dynamics. Transitioning between gentle sustained pressure and deep forceful entries across varied positions provides comprehensive stimulation that adapts to both partners' anatomies and preferences.");
+  }
+  if (data.thrustSpeed < 75) {
+    tips.push("Thrusting frequency below the average 75 strokes per minute may indicate a slower, more sensual pace that some partners prefer, though research shows optimal stimulation often occurs in the 80-90 thrusts per minute range. This frequency balances mechanical stimulation with sustainable cardiovascular output. Consider gradually increasing tempo while maintaining control, building from slow, deliberate movements to more vigorous, rhythmic pounding. Vary speed throughout the session—slow during entry and re-positioning, moderate during sustained intercourse, accelerating toward climax—rather than maintaining monotonous tempo.");
+  } else if (data.thrustSpeed > 90) {
+    tips.push("Thrusting frequency exceeding 90 per minute represents vigorous, high-intensity activity that demands excellent cardiovascular fitness and may risk partner overstimulation or discomfort. While some find this rapid tempo exciting, ensure continuous verbal and non-verbal feedback to prevent tissue irritation or cervical impact pain. This aggressive pace should be interspersed with slower, deeper thrusts to maintain a rhythm that fills her completely with each stroke while allowing both partners to sustain arousal without premature exhaustion.");
+  }
+  if (data.thrusts < 300) {
+    tips.push("Total thrust count below the estimated average of 356 per session (calculated from median 5.4-minute duration at 80 thrusts/minute) suggests either abbreviated session length or slower pacing. Extending duration by 2-3 minutes or incrementally increasing tempo by 10-15 thrusts per minute can create a fuller, more comprehensive experience. Each thrust represents a pulse of intimate connection, and accumulating these movements into a sustained rhythmic exchange allows progressive building of pleasure rather than rushed escalation.");
+  }
+  if (data.ejaculationVolume < 1.5) {
+    tips.push("Ejaculate volume measuring below the 1.5ml baseline may result from frequent sexual activity (reduced seminal vesicle reserves), inadequate hydration, or nutritional deficiencies. To increase volume toward the 3-5ml range that studies associate with fertility and satisfaction, maintain 2-3 days of abstinence before intercourse, drink 8-10 glasses of water daily, and supplement with zinc (15-30mg), L-arginine, and lecithin which support prostate function and semen production. This can lead to more copious release that floods depths with generous outpouring of seed.");
+  } else if (data.ejaculationVolume > 5) {
+    tips.push("Ejaculation volume exceeding 5ml places you well above average, potentially indicating excellent prostate health, longer abstinence period, or genetic predisposition for higher seminal production. This substantial volume correlates with male satisfaction and may signal robust reproductive health. Maintain this through continued hydration, balanced nutrition rich in zinc and amino acids, and regular sexual activity that keeps reproductive organs functioning optimally, resulting in impressive outpouring during climax.");
+  }
+  if (data.penetrationDepth > (data.vaginalDepth || 5)) {
+    tips.push("Penetration depth exceeding the partner's comfortable vaginal depth (average aroused depth 4-6 inches, though can expand to 7+ with full arousal) risks cervical impact causing sharp pain or post-coital discomfort. The vagina's posterior fornix—the deepest pocket—varies individually. Use shallower thrusts, angled to stimulate anterior or lateral vaginal walls rather than driving directly toward cervix. Positions like spooning or missionary with pillow under hips allow depth control. Focus on angles that stimulate her exquisitely sensitive inner walls without causing cervical collision.");
+  }
 
-  // Compatibility
-  if (weightRatio > 1.8) tips.push("Male significantly heavier (ratio >1.8)? Opt for female-on-top or side-lying positions to ensure comfort and reduce strain.");
-  else if (weightRatio > 1.4) tips.push("Moderate weight difference (ratio >1.4)? Use positions like cowgirl or seated to balance physical dynamics.");
-  if (weightRatio < 0.9) tips.push("Female heavier? Missionary or side-by-side positions help balance weight distribution.");
-  if (heightRatio < 1.05) tips.push("Similar heights? Spooning, seated, or face-to-face positions align bodies comfortably.");
-  else if (heightRatio > 1.25) tips.push("Large height gap? Use pillows under hips or try standing positions (e.g., against a wall) to align bodies.");
-  if (ageDiff > 10) tips.push("Age gap over 10 years? Discuss energy levels; younger partner may prefer faster pace, older may need slower, deeper focus.");
-  if (ageDiff > 20) tips.push("Age gap over 20 years? Prioritize communication to align stamina and preferences; consider breaks if needed.");
-  if (bmiDiff > 7) tips.push("BMI difference over 7? Adjust positions (e.g., missionary with pillows) to accommodate physical disparities.");
-  if (bmiDiff > 10) tips.push("Large BMI gap? Focus on low-exertion positions and ensure open dialogue about comfort.");
+  // Health and recovery recommendations
+  if (data.refractoryTime > avgRefractory) {
+    tips.push(`Refractory period of ${data.refractoryTime} minutes exceeds your age-adjusted average of approximately ${avgRefractory} minutes. This recovery interval—during which physiological arousal cannot be regained—increases predictably with age from 15 minutes in men under 30 to 40-60+ minutes over 50, driven by hormonal and neurological factors. To optimize recovery: engage in regular cardiovascular exercise which improves endothelial function and blood flow; maintain healthy diet rich in zinc, magnesium, and omega-3s supporting testosterone production; ensure adequate sleep for hormonal regulation; consider supplements like L-arginine or Maca root if over 45. If refractory period consistently exceeds 60 minutes despite good health practices, consult endocrinologist to assess testosterone levels. Shortened recovery allows quicker return to the embrace of passion.`);
+  }
+  if (data.roomTemp < 20 || data.roomTemp > 24) {
+    tips.push("Environmental temperature outside the optimal 20-24°C (68-75°F) range significantly impacts sexual performance and comfort. Temperatures below 20°C can cause vasoconstriction reducing genital blood flow, while heat above 24°C increases perspiration and may cause premature fatigue or overheating. Thermoregulation affects arousal—cold environments make achieving and maintaining erections more difficult, while excessive heat can reduce cardiovascular capacity needed for sustained activity. Adjust room temperature, use fans or heating as needed, and select bedding that facilitates temperature control to avoid chilling or overheating the heated union.");
+  }
+  if (data.condomUsed === 0) {
+    tips.push("Absence of barrier protection substantially increases risks of sexually transmitted infections (STIs) and unintended pregnancy. While condoms reduce sensation for some users (reported 5-10% sensitivity decrease), they're essential for safe sex outside mutually monogamous, tested partnerships with reliable contraception. Modern condoms are available in ultra-thin varieties (0.04-0.06mm) that minimize sensation loss. If you're in a committed relationship, both partners should undergo comprehensive STI screening, and discuss reliable contraceptive methods (IUD, implant, pills) to freely indulge without worry about health consequences.");
+  }
+  if (data.maleBMI < 18.5 || data.maleBMI > 30) {
+    tips.push(`Male BMI of ${data.maleBMI.toFixed(1)} falls outside the optimal 18.5-24.9 range, impacting sexual function through multiple pathways. Underweight status (<18.5) reduces energy reserves needed for sustained physical activity and may indicate nutritional deficiencies affecting hormone production. Overweight/obesity (>25) correlates with reduced testosterone, increased estrogen conversion, erectile dysfunction risk, and diminished cardiovascular capacity. Each 5-point BMI increase above 25 associates with 10-15% decline in testosterone. Aim for balanced nutrition with adequate protein (0.8-1g per pound bodyweight), regular strength and cardio training, and gradual sustainable weight adjustment toward healthy range to sustain vigorous thrusting without premature fatigue.`);
+  }
+  if (data.femaleBMI < 18.5 || data.femaleBMI > 30) {
+    tips.push(`Female BMI of ${data.femaleBMI.toFixed(1)} deviates from optimal range, potentially affecting arousal, lubrication, and comfort during intimate activity. Underweight status may reduce estrogen production affecting libido and vaginal lubrication, while obesity correlates with reduced genital blood flow, hormonal imbalances, and decreased sexual satisfaction scores in research. Women with BMI 18.5-24.9 report higher arousal ratings and orgasm frequency. Focus on sustainable nutrition emphasizing whole foods, adequate healthy fats for hormone production, and regular physical activity to enhance overall responsiveness and vascular health during the act.`);
+  }
+  if (data.avgHeartRate < 100) {
+    tips.push("Average heart rate below 100 bpm during intercourse suggests relatively low intensity activity from a cardiovascular perspective. Research shows optimal sexual activity elevates heart rate to 100-130 bpm, providing meaningful cardio benefits equivalent to moderate exercise. To increase intensity and associated health benefits: try positions requiring more muscle engagement (standing, woman-on-top with active movement); increase thrusting speed by 10-15 strokes per minute; incorporate full-body movements rather than just pelvic thrusting; extend duration by 3-5 minutes. This quickens the pulse like the rhythm of love while maximizing caloric expenditure and cardiovascular conditioning.");
+  }
+  if (data.calories > 200) {
+    tips.push("Exceptional caloric expenditure exceeding 200 kcal per session (average is 100-150 kcal) indicates highly vigorous activity involving substantial full-body muscle engagement, cardiovascular output, and extended duration. This places your session in the upper percentile for physical intensity, equivalent to moderate jogging. While excellent for fitness, ensure post-session hydration to replace fluid lost through perspiration during this sweaty entanglement, and consider light carbohydrate replenishment if multiple rounds are planned to maintain energy reserves.");
+  }
 
-  // Ethnicity-specific tips (detailed, culturally/physiologically informed)
-  if (data.femaleEthnicity === "indian") tips.push("Indian women may prioritize emotional intimacy; incorporate extended foreplay with sensual massage, eye contact, and verbal affirmations to deepen connection.");
-  if (data.femaleEthnicity === "asian") tips.push("Asian women often respond to smooth, rhythmic thrusting and gentle touch; maintain a steady pace, incorporate light caresses, and check in for feedback.");
-  if (data.femaleEthnicity === "african") tips.push("African women may prefer bold, confident movements; emphasize strong, rhythmic thrusting and a commanding physical presence, balanced with partner comfort.");
-  if (data.femaleEthnicity === "caucasian") tips.push("Caucasian women often enjoy a blend of passion and tenderness; combine deep, varied thrusts with romantic gestures like kissing or holding hands.");
-  if (data.femaleEthnicity === "latina") tips.push("Latina women may favor high-energy, expressive sessions; use dynamic positions (e.g., standing, reverse cowgirl) and show enthusiasm through vocal or physical engagement.");
-  if (data.femaleEthnicity === "other") tips.push("Uncertain of partner’s preferences? Openly discuss desires for pace, intensity, and emotional connection to tailor the experience.");
+  // Compatibility recommendations
+  const heightRatio = data.maleHeight / data.femaleHeight;
+  const weightRatio = data.maleWeight / data.femaleWeight;
+  const ageDiff = Math.abs(data.maleAge - data.femaleAge);
+  const bmiDiff = Math.abs(data.maleBMI - data.femaleBMI);
 
-  if (data.maleEthnicity === "indian") tips.push("Indian men: leverage cultural emphasis on sensuality; use prolonged foreplay with oils, tantric-inspired touch, or verbal intimacy to enhance partner satisfaction.");
-  if (data.maleEthnicity === "asian") tips.push("Asian men: focus on controlled, precise thrusting; maintain a consistent rhythm and respond to partner cues for optimal mutual pleasure.");
-  if (data.maleEthnicity === "african") tips.push("African men: capitalize on physical confidence; strong, rhythmic thrusting and assertive positioning can align with partner expectations, but check for comfort.");
-  if (data.maleEthnicity === "caucasian") tips.push("Caucasian men: balance intensity with intimacy; alternate fast thrusts with slower, deeper ones and maintain eye contact or gentle touch.");
-  if (data.maleEthnicity === "latina") tips.push("Latino men: embrace passionate, energetic style; use dynamic, expressive positions and vocal engagement to amplify mutual excitement.");
-  if (data.maleEthnicity === "other") tips.push("Unsure of your style? Experiment with varied paces and intensities, and ask your partner for feedback to align on preferences.");
+  if (Math.abs(heightRatio - 1.09) > 0.15) {
+    tips.push(`Height ratio of ${heightRatio.toFixed(2)} deviates significantly from the population average of 1.09 (men typically 9% taller). Substantial height disparities can create mechanical challenges for face-to-face positions and kissing during intercourse. Solutions include: using pillows or furniture height differences to align pelvises; favoring positions like spooning or rear-entry that minimize height requirements; woman-on-top positions where she controls alignment; standing positions using stairs or platforms for elevation adjustment. These adaptations enable seamless entry and movement despite anthropometric differences.`);
+  }
+  if (Math.abs(weightRatio - 1.3) > 0.3) {
+    tips.push(`Weight ratio of ${weightRatio.toFixed(2)} diverges from typical 1.3 ratio (men averaging 30% heavier), potentially affecting position stability and weight-bearing comfort. If male is substantially heavier: avoid prolonged full-weight missionary; use forearm support or side-lying variants. If weights are more equal or reversed: experiment with positions allowing lighter partner to maintain control like woman-on-top or standing variants. Side-lying positions like spooning distribute weight naturally without requiring significant support, preventing strain during passionate embraces while allowing sustained intimacy.`);
+  }
+  if (ageDiff > 10) {
+    tips.push(`Age gap of ${ageDiff} years creates physiological disparities in sexual response, stamina, and recovery times. Younger partners typically demonstrate: shorter refractory periods (15-20 min vs 40-60+ min); higher baseline testosterone and cardiovascular capacity; greater spontaneous arousal. Older partners often bring: enhanced technique and communication skills; better ejaculatory control; more attentiveness to partner pleasure. Navigate this by: discussing stamina expectations openly; planning multiple sessions if younger partner desires additional rounds; focusing on quality over quantity; leveraging older partner's experience in extended foreplay and varied techniques. Adjusting pace to match energies creates balanced encounters.`);
+  }
+  if (bmiDiff > 5) {
+    tips.push(`BMI difference of ${bmiDiff.toFixed(1)} points indicates disparate fitness levels that may manifest in stamina mismatches and physical compatibility challenges. Partner with higher fitness typically demonstrates greater cardiovascular endurance, flexibility, and muscle strength for sustained activity. Bridge this gap through: joint fitness activities like yoga (improves flexibility for diverse positions), swimming (builds endurance without joint stress), or strength training (enhances core stability for position-holding); gradual intensity building allowing less-fit partner to develop capacity; position selection favoring mutual support rather than requiring one partner to bear weight extensively. Synchronized fitness levels facilitate fluid intimacy where both partners sustain arousal and activity without one fatiguing prematurely.`);
+  }
+  if (data.maleEthnicity !== data.femaleEthnicity) {
+    tips.push("Ethnic differences between partners carry minimal physiological implications—anatomical variations within ethnic groups vastly exceed between-group differences. However, cultural backgrounds may shape expectations around intimacy, communication styles, gender role dynamics, and preferred pacing/intensity. Some cultural contexts emphasize prolonged emotional buildup and tantric connection; others favor more direct, passionate expression. Open communication about preferences, comfort levels, and desires helps blend individual styles harmoniously rather than assuming cultural stereotypes dictate individual needs. The physiological mechanics of pleasure remain universal across all backgrounds.");
+  }
 
-  // Output
+  // Ethnicity-specific cultural context (not stereotypes)
+  if (data.femaleEthnicity === "indian") {
+    tips.push("Cultural contexts like traditional texts such as the Kama Sutra—originating in South Asian philosophy—emphasize holistic intimacy integrating emotional, spiritual, and physical dimensions. This approach values extended preparation rituals: sensual massage with aromatic oils stimulating skin's largest sensory organ; sustained eye contact activating mirror neurons for emotional synchronization; verbal intimacy expressing desires and admiration; tantric breathing synchronization. The act itself unfolds deliberately, like a sacred ritual where gradual escalation honors the profound connection. Her body yields through patient, persistent exploration rather than rushed mechanical stimulation, culminating in union that echoes ancient verses celebrating divine merger of masculine and feminine energies.");
+  }
+  if (data.femaleEthnicity === "asian") {
+    tips.push("While Asia encompasses vast cultural diversity, some research suggests preferences in certain contexts for smooth, rhythmic stimulation with attention to subtlety and nuance. Maintain steady, controlled pacing rather than erratic intensity changes. Light, precise caresses along sensitive zones—inner thighs, lower abdomen, sides of breasts—build arousal through delicate touch. The encounter may build like a serene wave, gradually accumulating energy. Her non-verbal responses—breathing changes, muscle tension, pelvic movements—guide optimal depth and tempo adjustments. Communication through responsive touch rather than explicit verbal direction may feel more natural, leading to harmonious climax through attentive synchronization.");
+  }
+  if (data.femaleEthnicity === "african") {
+    tips.push("Cultural contexts across diverse African traditions often celebrate confident, expressive sexuality and embodied pleasure without excessive inhibition. Bold, rhythmic movements with assertive positioning may resonate—strong, consistent thrusting cadence creating hypnotic rhythm. Physical confidence balanced with attentiveness to comfort allows the session to pulse with uninhibited energy. Her body's responses to powerful, undulating motions—vocalizations, active participation, rhythmic matching—indicate engagement. Positions allowing deep penetration and full-body contact like modified missionary or standing embrace facilitate this energetic exchange, driving toward ecstatic release through primal, authentic expression.");
+  }
+  if (data.femaleEthnicity === "caucasian") {
+    tips.push("Western cultural contexts often integrate both passionate intensity and romantic tenderness within intimate encounters. Combine varied thrusting—alternating between forceful, deep entries and slower, grinding movements that maintain clitoral contact—with romantic gestures: sustained kissing, eye contact during climax, verbal expressions of desire and affection, hand-holding or face-caressing. This creates layered experience weaving physical intensity with emotional connection. The dance shifts fluidly between raw passion and gentle intimacy, where each thrust kindles sparks of pleasure while emotional bonding deepens, culminating in shared peaks that merge physical and psychological satisfaction.");
+  }
+  if (data.femaleEthnicity === "latina") {
+    tips.push("Cultural contexts in Latin American traditions often embrace passionate, expressive sexuality with emphasis on enthusiasm and emotional intensity. High-energy, dynamic sessions with vocal expressions of pleasure—moaning, verbal encouragement, passionate Spanish phrases—amplify excitement. Positions enabling active participation like reverse cowgirl (allowing her control and display), standing face-to-face (requiring mutual support and coordination), or seated positions (facilitating grinding motions) align with preferences for engaged, interactive encounters. Show uninhibited enthusiasm through physical vigor and verbal affirmation, igniting fiery passion that builds through escalating intensity to explosive shared peaks where mutual release merges in thunderous climax.");
+  }
+  if (data.femaleEthnicity === "other") {
+    tips.push("Every individual transcends broad categorizations—personal preferences shaped by unique experiences, values, and desires matter far more than demographic groupings. Explore preferences through open communication: ask about preferred pacing (slow and sensual vs fast and vigorous), pressure intensity, position favorites, verbal feedback comfort, and fantasy elements. Tailor the experience to mutual desires whether that involves meditative, prolonged sessions or brief, intense encounters. The act becomes personalized journey of discovery where attentiveness to individual responses—breathing, muscle tension, vocalizations, explicit feedback—guides optimal technique.");
+  }
+
+  if (data.maleEthnicity === "indian") {
+    tips.push("Drawing from South Asian cultural traditions like tantric philosophy and classical texts, approach intimacy as integration of physical, emotional, and spiritual dimensions. Use prolonged arousal-building through full-body massage with warmed oils, verbal expressions of admiration and desire, synchronized breathing to create energetic resonance. During penetration, maintain deliberate, controlled movements—guiding entry mindfully, adjusting depth and angle based on partner feedback. The metaphorical 'scepter of serenity' enters the 'celestial clearing' with meaningful intention, each stroke honoring emotional bond rather than purely mechanical friction. Extended duration without rushing toward climax allows multiple peaks of arousal, potentially achieving whole-body orgasmic experiences transcending genital-focused sensation.");
+  }
+  if (data.maleEthnicity === "asian") {
+    tips.push("Cultural contexts across diverse Asian traditions may emphasize technical precision, disciplined control, and responsive attunement over raw intensity. Focus on controlled, consistent rhythm—maintaining steady tempo responding moment-by-moment to partner's cues through breath changes, muscle tensions, and subtle vocalizations. Each movement calculated to maximize mutual pleasure through refined technique rather than vigorous exertion alone. The act flows like disciplined art form, requiring concentration and skill mastery. Build arousal through patient, methodical stimulation where quality of touch and precise positioning create balanced exchange culminating in synchronized release achieved through harmonized effort.");
+  }
+  if (data.maleEthnicity === "african") {
+    tips.push("Cultural traditions across diverse African contexts often celebrate embodied confidence, rhythmic expression, and uninhibited physical presence during intimacy. Employ strong, assertive positioning—taking clear initiative while remaining responsive to comfort. Rhythmic, powerful thrusting with consistent cadence creates hypnotic momentum, bodies colliding in raw, authentic exchange. Physical confidence manifests through full-body engagement—not just pelvic movement but coordinated core, glutes, and legs driving motion. Maintain stamina for sustained intensity, checking comfort through verbal and non-verbal feedback. The session becomes powerful symphony where primal instincts merge with attentive partnership, culminating in release that feels liberating and deeply satisfying.");
+  }
+  if (data.maleEthnicity === "caucasian") {
+    tips.push("Western cultural frameworks often emphasize balancing physical passion with emotional intimacy—integrating intense sensation with romantic connection. Alternate between vigorous, fast thrusting that demonstrates desire and slower, grinding movements maintaining deeper contact. Incorporate emotional elements: sustained eye contact conveying vulnerability and connection, verbal affirmations of attraction and pleasure, kissing throughout rather than just during foreplay, gentle face-caressing or hand-holding during climax. This crafts multi-dimensional experience where passion meets tenderness in waves of escalating bliss—physical intensity amplified by emotional resonance, creating satisfaction beyond purely physiological release.");
+  }
+  if (data.maleEthnicity === "latino") {
+    tips.push("Latin American cultural contexts often celebrate passionate, expressive, enthusiastic sexuality with emphasis on emotional intensity and vocal expression. Embrace energetic, dynamic style—using varied positions like standing positions against walls, seated on chairs with active bouncing, or woman-on-top with active thrusting from below. Vocal engagement amplifies excitement: verbal encouragement, passionate expressions in Spanish, vocal moaning signaling arousal levels. Physical enthusiasm through full-body involvement and varied pacing—building from moderate to vigorous intensity—creates vibrant encounter. The session transforms into fiesta of sensations where uninhibited expression, mutual enthusiasm, and escalating passion lead to thunderous climaxes where release feels explosive and emotionally cathartic.");
+  }
+  if (data.maleEthnicity === "other") {
+    tips.push("Individual preferences vastly exceed any demographic categorization—your unique combination of experiences, values, communication style, and desires shapes optimal approach. Experiment with varied paces (slow, sustained vs rapid, intense), positions (intimate face-to-face vs depersonalized rear-entry), intensities (gentle vs vigorous), and durations. Establish clear communication protocols: verbal check-ins, non-verbal signals, post-encounter discussions about what worked. Make the act unique tapestry of shared exploration where both partners' authentic selves merge, creating fulfillment through mutual discovery rather than adherence to prescribed scripts. Flexibility and responsiveness trump rigid adherence to any single approach.");
+  }
+
+  // Advanced performance insights
+  if (data.enduranceRating < 80) {
+    tips.push(`Endurance rating of ${data.enduranceRating.toFixed(1)} suggests room for stamina development through targeted training. Sexual stamina parallels athletic conditioning: interval training improves cardiovascular capacity for sustained activity; pelvic floor exercises (Kegels—contract PC muscle for 5 seconds, 10-15 reps, 3x daily) enhance ejaculatory control; core strengthening (planks, bridges) stabilizes thrusting mechanics; hip flexibility training (butterfly stretches, hip circles) improves position range. Mental techniques like mindful arousal monitoring—maintaining 7-8 out of 10 intensity rather than racing to 10—extend duration significantly.`);
+  }
+  if (data.rhythmConsistency < 70) {
+    tips.push(`Rhythm consistency score of ${data.rhythmConsistency.toFixed(1)} indicates thrusting tempo may vary substantially from optimal 80 strokes/minute baseline. Inconsistent pacing can disrupt arousal building—both partners benefit from predictable rhythm allowing physiological responses to synchronize. Practice maintaining steady cadence: internally count beats, match breathing rhythm (3-4 thrusts per breath cycle), or use subtle music with 80-90 BPM tempo as unconscious guide. Consistency doesn't mean monotony—vary depth and angle while maintaining temporal regularity, creating reliable stimulation pattern that allows arousal to accumulate progressively.`);
+  }
+  if (data.physicalSynergy < 70) {
+    tips.push(`Physical synergy score of ${data.physicalSynergy.toFixed(1)} reflects physiological disparities between partners in age, fitness, or body composition. Enhanced compatibility comes through: synchronized fitness routines building comparable stamina and strength; flexibility training enabling both partners to achieve varied positions comfortably; communication about physical limitations or discomforts; position selection accommodating anatomical differences. High synergy creates seamless flow where bodies move as coordinated unit, transitions occur effortlessly, and both partners sustain activity without one dramatically outlasting the other.`);
+  }
+  if (data.orgasmEfficiency < 15) {
+    tips.push(`Orgasm efficiency of ${data.orgasmEfficiency.toFixed(1)}% (orgasms per minute of intercourse) suggests extended duration relative to climax frequency. While prolonged sessions offer extended intimacy, consider whether both partners are achieving optimal pleasure density. Strategies to enhance efficiency without sacrificing quality: incorporate clitoral stimulation devices during penetration (vibrating rings increase female orgasm rates to 80%+); use positions maximizing G-spot or A-spot contact (pillows under hips, legs-on-shoulders variants); communicate openly about what accelerates arousal versus what maintains plateau; consider multiple shorter sessions rather than single extended encounter if fatigue limits orgasmic capacity.`);
+  }
+  if (data.cardiovascularLoad < 60) {
+    tips.push(`Cardiovascular load of ${data.cardiovascularLoad.toFixed(1)}% indicates relatively gentle physical exertion from a health perspective. While intimacy offers numerous benefits beyond pure exercise, increasing intensity amplifies cardiovascular conditioning, calorie expenditure, and endorphin release. Boost cardiovascular engagement through: positions requiring more muscle groups (standing, squatting, active woman-on-top); increased thrusting tempo by 15-20 strokes/minute; extended duration by 3-5 minutes; incorporating full-body movements—not just pelvic thrusting but coordinated total-body rhythm. This elevates heart rate into training zone (120-140 BPM) providing meaningful fitness benefits.`);
+  }
+  if (data.recoveryEfficiency < 70) {
+    tips.push(`Recovery efficiency of ${data.recoveryEfficiency.toFixed(1)}% indicates extended refractory period relative to age-adjusted averages. Faster recovery enables multiple rounds if desired, increasing total satisfaction. Optimization strategies: cardiovascular exercise 3-4x weekly improves endothelial function and blood flow recovery; resistance training boosts testosterone production; adequate sleep (7-9 hours) regulates hormone cycles; stress management through meditation or therapy reduces cortisol (testosterone antagonist); nutritional support with zinc (30mg), L-arginine (3-5g), Maca root (1500mg) may improve parameters; limiting alcohol (depresses testosterone and delays recovery). If over 50, discuss testosterone evaluation with physician.`);
+  }
+  if (data.positionDiversity < 60) {
+    tips.push(`Position diversity score of ${data.positionDiversity.toFixed(1)}% suggests limited variety that may cause repetitive stimulation patterns and anatomical strain from sustained positioning. Humans are capable of 100+ intercourse positions—exploring broader range provides: varied angles targeting different vaginal zones (anterior wall/G-spot vs posterior/A-spot); alternating which partner controls depth and rhythm; distributing physical exertion across different muscle groups preventing fatigue; novelty that maintains psychological engagement. Start by adding 1-2 positions per encounter: if you typically use missionary, add woman-on-top for clitoral access and spooning for intimate grinding. Gradual expansion creates richer experience.`);
+  }
+  if (data.penetrationEfficiency < 70) {
+    tips.push(`Penetration compatibility score of ${data.penetrationEfficiency.toFixed(1)}% indicates suboptimal matching between penis dimensions and vaginal accommodation, potentially causing discomfort or incomplete stimulation. Vaginas average 3-4 inches unaroused, expanding to 4-7+ inches when fully aroused through blood engorgement and muscular relaxation. Solutions for length mismatch: if penis significantly exceeds comfortable depth, use shallow thrusting, angled entry targeting anterior wall rather than straight cervical contact, positions like spooning limiting depth, or donut-shaped rings limiting penetration. If notably shorter, use positions maximizing depth like legs-on-shoulders, doggy with arched back, or reverse cowgirl. Girth mismatches: if too large, extend foreplay for maximum accommodation and use generous lubrication; if narrower, try positions creating tighter grip like crossed-legs missionary.`);
+  }
+
+  // Output with comprehensive narrative
   const resultDiv = document.getElementById("result");
   resultDiv.style.display = "block";
   resultDiv.innerHTML = `
-    <h2>Performance Rating: ${finalScore}/100</h2>
+    <h2>Comprehensive Performance Rating: ${finalScore}/100</h2>
+    <p style="font-size: 1.1em; color: ${finalScore >= 80 ? '#2d5' : finalScore >= 60 ? '#f90' : '#e53'}; font-weight: bold;">
+      ${finalScore >= 90 ? 'Outstanding - Elite Performance' : 
+        finalScore >= 80 ? 'Excellent - Above Average' : 
+        finalScore >= 70 ? 'Good - Solid Performance' : 
+        finalScore >= 60 ? 'Fair - Room for Growth' : 
+        'Needs Improvement - Focus on Development Areas'}
+    </p>
+    
     <h3>Score Breakdown (Each /20):</h3>
-    <ul>
-      <li>Size Metrics (avg ~5.2L/4.6G in): ${sizeScore}/20</li>
-      <li>Duration & Foreplay (ideal 7-13/10-20 min): ${durationScore}/20</li>
-      <li>Orgasms (female emphasis): ${orgasmScore}/20</li>
-      <li>Intensity & Variety (thrusts, positions): ${intensityScore}/20</li>
-      <li>Health & Cardio (BMI, recovery): ${healthScore}/20</li>
-      <li>Compatibility (height/weight/age): ${compatScore}/20</li>
+    <ul style="line-height: 1.8;">
+      <li><strong>Size Metrics:</strong> ${sizeScore}/20 - Based on global averages (length ~5.16", girth ~4.59") from Veale 2015 systematic review of 15,521 men. Scores reflect proximity to population norms and compatibility with partner anatomy.</li>
+      <li><strong>Duration & Foreplay:</strong> ${durationScore}/20 - Median intercourse duration 5.4 minutes (Waldinger 2005), desired range 7-13 minutes. Foreplay averages 11-12 minutes, optimal 15-20 minutes for female arousal maximization.</li>
+      <li><strong>Orgasms:</strong> ${orgasmScore}/20 - Female orgasm rates 46-65% in heterosexual encounters (2020-2025 studies), male rates 70-85%. Scores emphasize closing the pleasure gap through equitable climax achievement.</li>
+      <li><strong>Intensity & Variety:</strong> ${intensityScore}/20 - Optimal thrusting 75-90/minute, 3-5 positions per session, ejaculate volume 1.5-5ml, penetration depth matching aroused vaginal accommodation 4-6 inches.</li>
+      <li><strong>Health & Recovery:</strong> ${healthScore}/20 - Target heart rate 100-130 BPM, 100-200 kcal expenditure, age-adjusted refractory periods (15-60+ minutes), optimal environment 20-24°C, safe sex practices.</li>
+      <li><strong>Compatibility:</strong> ${compatScore}/20 - Average height ratio 1.09 (male 9% taller), weight ratio ~1.3, minimal age gaps, similar fitness levels, and cultural communication alignment.</li>
     </ul>
-    <h3>Personalized Recommendations:</h3>
-    <ul>${tips.map(t => `<li>${t}</li>`).join("")}</ul>
-    <h3>Detailed Insights:</h3>
-    <ul>
-      <li>Total Thrusts: ${Math.round(data.thrusts)}, Per Minute: ${Math.round(thrustsPerMin)} (ideal 100-150)</li>
-      <li>Estimated Calories Burned: ${Math.round(data.calories)} kcal (based on MET ~3.5)</li>
-      <li>Male BMI: ${data.maleBMI.toFixed(1)} (ideal 18.5-24.9), Female BMI: ${data.femaleBMI.toFixed(1)}</li>
-      <li>Height Ratio (M/F): ${heightRatio.toFixed(2)} (ideal 1.05-1.25), Weight Ratio: ${weightRatio.toFixed(2)} (ideal 1.1-1.4)</li>
-      <li>Age Difference: ${ageDiff} years (smaller gaps often enhance compatibility)</li>
-      <li>Penetration Compatibility: ${data.vaginalDepth ? `Depth ${data.penetrationDepth} cm vs vaginal ${data.vaginalDepth} in (~${(data.vaginalDepth * 2.54).toFixed(1)} cm)` : 'Vaginal depth not provided'}</li>
-      <li>Physical Exertion: Estimated heart rate ${Math.round(data.avgHeartRate)} bpm, indicating ${data.avgHeartRate > 100 ? 'moderate to high' : 'low to moderate'} cardiovascular effort</li>
+
+    <h3>Session Narrative Summary:</h3>
+    <p style="line-height: 1.8; font-size: 1.05em;">
+      This intimate encounter commenced with ${data.foreplay} minutes of arousal-building foreplay, employing sensual touches, verbal intimacy, and focused stimulation to prepare both bodies for intercourse. The transition to penetration initiated ${data.duration} minutes of rhythmic coupling, characterized by ${Math.round(data.thrusts)} total thrusts delivered at an average cadence of ${Math.round(data.thrustSpeed)} strokes per minute—${data.thrustSpeed > 90 ? 'a vigorous, high-intensity tempo' : data.thrustSpeed > 75 ? 'a moderate, sustainable rhythm' : 'a slower, deliberate pace'}. 
+      
+      The male partner achieved ${data.maleOrgasms} ${data.maleOrgasms === 1 ? 'orgasm' : 'orgasms'}, releasing approximately ${data.ejaculationVolume}ml of ejaculate in ${data.maleOrgasms === 1 ? 'a climactic surge' : 'successive waves'}, while the female partner experienced ${data.femaleOrgasms} ${data.femaleOrgasms === 1 ? 'peak of pleasure' : data.femaleOrgasms > 1 ? 'cascading orgasms' : 'session without orgasmic release'}. This represents ${data.femaleOrgasms === 0 ? 'the documented orgasm gap requiring attention' : data.femaleOrgasms >= data.maleOrgasms ? 'excellent orgasmic equity' : 'moderate orgasmic disparity'}.
+      
+      Position variety spanned ${data.positions} different configurations, with penetration averaging ${data.penetrationDepth} inches—${data.vaginalDepth ? (data.penetrationDepth > data.vaginalDepth ? 'exceeding comfortable vaginal depth, suggesting need for shallower angles' : 'appropriately matched to anatomical accommodation') : 'within typical aroused vaginal range of 4-6 inches'}. The encounter unfolded in environmental conditions of ${data.roomTemp}°C, ${data.roomTemp >= 20 && data.roomTemp <= 24 ? 'providing optimal comfort for sustained activity' : 'creating suboptimal thermal conditions potentially affecting performance'}.
+      
+      Following climax, the refractory recovery period extended ${data.refractoryTime} minutes, ${data.refractoryTime < avgRefractory ? 'demonstrating impressive recovery speed' : data.refractoryTime > avgRefractory + 20 ? 'indicating extended recovery needs' : 'aligning with age-appropriate expectations'}, allowing physiological return to baseline before potential additional rounds. The complete session, including all phases, consumed ${data.totalSessionTime.toFixed(1)} minutes of intimate connection.
+    </p>
+
+    <h3>Advanced Performance Metrics:</h3>
+    <ul style="line-height: 1.8;">
+      <li><strong>Total Thrust Count:</strong> ${Math.round(data.thrusts)} strokes (average session: ~356 based on median duration × typical tempo)</li>
+      <li><strong>Thrusting Tempo:</strong> ${Math.round(data.thrustSpeed)} strokes/minute (optimal range: 75-90)</li>
+      <li><strong>Endurance Rating:</strong> ${data.enduranceRating.toFixed(1)}% - Normalized score combining duration and total thrusts relative to population medians</li>
+      <li><strong>Rhythm Consistency:</strong> ${data.rhythmConsistency.toFixed(1)}% - Deviation from optimal 80 strokes/minute baseline; higher scores indicate better tempo control</li>
+      <li><strong>Physical Synergy:</strong> ${data.physicalSynergy.toFixed(1)}% - Compatibility based on age, BMI, and fitness level alignment between partners</li>
+      <li><strong>Orgasm Efficiency:</strong> ${data.orgasmEfficiency.toFixed(2)} orgasms/minute - Climax density relative to duration; higher indicates efficient pleasure achievement</li>
+      <li><strong>Estimated Calories Burned:</strong> ${Math.round(data.calories)} kcal (typical range: 100-200 per session, equivalent to ${(data.calories / 100 * 15).toFixed(0)} minutes of moderate walking)</li>
+      <li><strong>Cardiovascular Load:</strong> ${data.cardiovascularLoad.toFixed(1)}% - Intensity relative to optimal cardio training zone (100-130 BPM, 150 kcal/session)</li>
+      <li><strong>Average Heart Rate:</strong> ${Math.round(data.avgHeartRate)} BPM (optimal range: 100-130 for cardio benefits)</li>
+      <li><strong>Recovery Efficiency:</strong> ${data.recoveryEfficiency.toFixed(1)}% - Refractory speed relative to age-adjusted averages; higher enables multiple rounds</li>
+      <li><strong>Position Diversity:</strong> ${data.positionDiversity.toFixed(1)}% - Variety score based on position changes (optimal: 3-5 per session)</li>
+      <li><strong>Penetration Compatibility:</strong> ${data.penetrationEfficiency.toFixed(1)}% - Anatomical matching between penis dimensions and vaginal accommodation</li>
+      <li><strong>Arousal Index:</strong> ${data.arousalIndex.toFixed(1)} - Experimental metric combining foreplay duration, orgasm achievement, and natural lubrication indicators</li>
+      <li><strong>Stamina Index:</strong> ${data.staminaIndex.toFixed(1)} - Age-adjusted endurance score factoring duration, intensity, and cardiovascular capacity</li>
+      <li><strong>Intensity Index:</strong> ${data.intensityIndex.toFixed(1)} - Normalized composite of thrusting tempo, position variety, and duration relative to research-backed averages</li>
+      <li><strong>Satisfaction Index:</strong> ${data.satisfactionIndex.toFixed(1)} - Rough proxy based on orgasms-per-minute; higher correlates with reported satisfaction in studies</li>
     </ul>
+
+    <h3>Anthropometric Analysis:</h3>
+    <ul style="line-height: 1.8;">
+      <li><strong>Male BMI:</strong> ${data.maleBMI.toFixed(1)} (${data.maleBMI < 18.5 ? 'Underweight - may impact energy/stamina' : data.maleBMI <= 24.9 ? 'Healthy range - optimal for performance' : data.maleBMI <= 29.9 ? 'Overweight - minor cardiovascular impact' : 'Obese - significant performance effects, consider health intervention'})</li>
+      <li><strong>Female BMI:</strong> ${data.femaleBMI.toFixed(1)} (${data.femaleBMI < 18.5 ? 'Underweight - may affect lubrication/arousal' : data.femaleBMI <= 24.9 ? 'Healthy range - optimal for sexual response' : data.femaleBMI <= 29.9 ? 'Overweight - minor impacts on comfort' : 'Obese - may affect genital blood flow and satisfaction'})</li>
+      <li><strong>Height Ratio (M/F):</strong> ${(data.maleHeight / data.femaleHeight).toFixed(2)} (population average: ~1.09, representing 9% height advantage for males)</li>
+      <li><strong>Weight Ratio (M/F):</strong> ${(data.maleWeight / data.femaleWeight).toFixed(2)} (population average: ~1.3, representing 30% weight advantage for males)</li>
+      <li><strong>Age Difference:</strong> ${Math.abs(data.maleAge - data.femaleAge)} years (${ageDiff <= 5 ? 'minimal gap - similar life stages and sexual response patterns' : ageDiff <= 10 ? 'moderate gap - some physiological differences' : 'significant gap - notable stamina/recovery disparities'})</li>
+      <li><strong>BMI Difference:</strong> ${bmiDiff.toFixed(1)} points (${bmiDiff <= 3 ? 'excellent fitness alignment' : bmiDiff <= 5 ? 'moderate alignment' : 'significant fitness disparity - may affect compatibility'})</li>
+      <li><strong>Penis Dimensions:</strong> ${data.penisLength}" length × ${data.penisGirth}" girth (global averages: 5.16" × 4.59" per meta-analysis)</li>
+      <li><strong>Vaginal Depth Compatibility:</strong> ${data.vaginalDepth ? `Partner's aroused depth ${data.vaginalDepth}", penetration ${data.penetrationDepth}" - ${Math.abs(data.penetrationDepth - data.vaginalDepth) <= 1 ? 'excellent match' : data.penetrationDepth > data.vaginalDepth + 1.5 ? 'penis exceeds comfortable depth' : 'room for deeper penetration'}` : 'Not provided (typical aroused range: 4-6 inches)'}</li>
+    </ul>
+
+    <h3>Personalized Evidence-Based Recommendations:</h3>
+    <ul style="line-height: 1.9;">
+      ${tips.map(t => `<li>${t}</li>`).join("")}
+    </ul>
+
+    <h3>Research Context & Benchmarking:</h3>
+    <p style="line-height: 1.8;">
+      Your performance is contextualized against extensive peer-reviewed sexual health research including: Veale et al.'s 2015 systematic review of 15,521 men establishing global penis size norms; Waldinger's 2005 multinational stopwatch study of 491 couples determining median intercourse duration; Frederick et al.'s 2018 analysis of orgasm frequency showing persistent gaps; Herbenick et al.'s 2020-2024 surveys on position preferences and satisfaction correlates; and numerous studies on cardiovascular load, caloric expenditure, and refractory period variations.
+      
+      Individual variation vastly exceeds population averages—these metrics serve as reference points, not rigid standards. Sexual satisfaction research consistently shows communication, emotional connection, and mutual respect predict satisfaction far more reliably than any physical measurement. Use these insights as tools for growth while recognizing that genuine intimacy transcends quantification.
+    </p>
   `;
 });
