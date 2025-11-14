@@ -523,4 +523,166 @@ function showScore({passion,duration,avgPressure,circle,pinch,peckMode,kisses}){
   if(pinch) det.push('Pinch/Bite moves');
   if(peckMode) det.push('Peck storm');
   if(avgPressure>0.7) det.push('Strong pressure');
-  pop(det.length? de
+  pop(det.length? det.join(' • '): 'Nice one!', 1600);
+}
+
+/* imprint visual */
+function showImprint(passion){
+  imprintEl.style.transform = 'translate(-50%,-50%) scale(1)';
+  imprintEl.style.opacity = String(Math.min(0.92, 0.05 + passion/120));
+  setTimeout(()=>{ imprintEl.style.transform='translate(-50%,-50%) scale(0)'; imprintEl.style.opacity='0'; }, 2400);
+}
+
+/* small helper to clamp passion for visuals */
+function passsionSafe(p){ return Math.max(0, Math.min(100, p)); }
+
+/* ========== Pointer / Touch handling ========== */
+function onPointerDown(e){
+  e.preventDefault();
+  const id = e.pointerId ?? 'm';
+  const p = {x: e.clientX, y: e.clientY, t: Date.now(), start:{x:e.clientX,y:e.clientY}, history: [{x:e.clientX,y:e.clientY,t:Date.now()}], pressure: e.pressure ?? (e.force ?? 0.5)};
+  p.start = {x:e.clientX, y:e.clientY};
+  pointerMap.set(id, p);
+  state.maxTouches = Math.max(state.maxTouches, pointerMap.size);
+  state.startTime = state.startTime || Date.now();
+  state.touches.push(p);
+  state.pressureSamples += (e.pressure?1:0);
+  if(e.pressure) { state.totalPressure += e.pressure; state.pressureSamples++; }
+  // small feedback
+  spawnHeart(e.clientX, e.clientY, 0.6);
+  if(state.vibration) vibrate(10);
+  if(state.sound) playSmooch(0.18);
+
+  // mouse quick tap detection
+  if((Date.now() - lastTouchTime) < 700){
+    registerTap();
+  }
+}
+function onPointerMove(e){
+  if(!pointerMap.has(e.pointerId)) return;
+  const p = pointerMap.get(e.pointerId);
+  p.x = e.clientX; p.y = e.clientY; p.t = Date.now();
+  p.history.push({x:e.clientX, y:e.clientY, t:Date.now()});
+  // store pressure if available
+  if(e.pressure) { state.totalPressure += e.pressure; state.pressureSamples++; }
+  // visual: tilt lips according to movement
+  const dx = (e.clientX - (window.innerWidth/2));
+  const dy = (e.clientY - (window.innerHeight/2));
+  const tiltX = Math.max(-10, Math.min(10, -dy/40));
+  const tiltY = Math.max(-12, Math.min(12, dx/40));
+  lipsEl.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(${1+Math.min(0.06, Math.hypot(dx,dy)/3000)})`;
+}
+function onPointerUp(e){
+  // finalize single pointer
+  if(pointerMap.has(e.pointerId)){
+    // register tap if short touch
+    const p = pointerMap.get(e.pointerId);
+    const d = Date.now() - (p.history[0].t||p.t);
+    if(d < 300 && (p.history.length<6)) registerTap();
+    pointerMap.delete(e.pointerId);
+  } else {
+    // mouse (no pointerId)
+    // best effort
+  }
+  // if all pointers released: finalize kiss after a delay
+  if(pointerMap.size === 0){
+    // set lastUp then finalize after a small pause to interpret pecks vs long kiss
+    setTimeout(()=> {
+      if(pointerMap.size === 0) finalizeKiss();
+    }, 900);
+  }
+}
+
+/* Support for older touch/mouse events */
+function bindPointerEvents(){
+  // prefer pointer events
+  if(window.PointerEvent){
+    lipsEl.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+  } else {
+    // touch
+    lipsEl.addEventListener('touchstart', function(ev){
+      Array.from(ev.changedTouches).forEach(t=> onPointerDown({pointerId:t.identifier, clientX:t.clientX, clientY:t.clientY, pressure: t.force || 0.5, preventDefault: ()=>ev.preventDefault()}));
+    }, {passive:false});
+    window.addEventListener('touchmove', function(ev){
+      Array.from(ev.changedTouches).forEach(t=> onPointerMove({pointerId:t.identifier, clientX:t.clientX, clientY:t.clientY, pressure: t.force || 0.5}));
+    }, {passive:false});
+    window.addEventListener('touchend', function(ev){
+      Array.from(ev.changedTouches).forEach(t=> onPointerUp({pointerId:t.identifier}));
+    });
+    // mouse
+    let mouseDown = false;
+    lipsEl.addEventListener('mousedown', function(ev){
+      mouseDown = true; onPointerDown({pointerId:'m', clientX:ev.clientX, clientY:ev.clientY, pressure:0.5, preventDefault: ()=>ev.preventDefault()});
+    });
+    window.addEventListener('mousemove', function(ev){ if(mouseDown) onPointerMove({pointerId:'m', clientX:ev.clientX, clientY:ev.clientY, pressure:0.5}); });
+    window.addEventListener('mouseup', function(ev){ if(mouseDown) { mouseDown=false; onPointerUp({pointerId:'m'}); }});
+  }
+}
+bindPointerEvents();
+
+/* reset */
+resetBtn.addEventListener('click', ()=>{
+  state = { ...state, kissing:false, startTime:0, lastUp:0, touches:[], maxTouches:0, totalPressure:0, pressureSamples:0, kissCount:0, longest:0, passion:0, lastScore:null, nsfw:state.nsfw, vibration:state.vibration, sound:state.sound, heartbeat:state.heartbeat };
+  scoreEmoji.textContent='💋'; scoreTitle.textContent='Give the lips a good kiss!'; scoreDetails.textContent='Kisses: 0 • Longest: 0.0s • Max fingers: 0 • Passion: 0/100';
+  pop('Reset — ready');
+  stopHeartbeat();
+});
+
+/* demo */
+demoBtn.addEventListener('click', ()=>{
+  // simulate a long passionate kiss
+  state.maxTouches = 2;
+  state.totalPressure = 1.6; state.pressureSamples = 2;
+  state.startTime = Date.now() - 4500;
+  pointerMap.set('d1', {start:{x:100,y:100}, x:100,y:100, history: Array.from({length:40}, (_,i)=>({x:350+Math.sin(i/6)*40, y:220+Math.cos(i/6)*28, t:Date.now()- (40-i)*60}))});
+  finalizeKiss();
+});
+
+/* explain & share */
+explainBtn.addEventListener('click', ()=>{
+  if(!state.lastScore){ pop('No kiss yet — try one!'); return; }
+  const s = state.lastScore;
+  const parts = [
+    `Passion ${s.passion}/100`,
+    `Duration ${s.duration.toFixed(1)}s`,
+    `Pressure ${(s.avgPressure||0).toFixed(2)}`,
+    s.circle.circular ? `Swirl(${s.circle.score})` : '',
+    s.pinch ? 'Pinch detected' : '',
+    s.peckMode ? 'Peck pattern' : ''
+  ].filter(Boolean);
+  pop(parts.join(' • '), 3000);
+});
+
+shareBtn.addEventListener('click', ()=>{
+  const s = state.lastScore;
+  if(!s){ pop('No result yet'); return; }
+  const text = `Kissed: Passion ${s.passion}/100 • ${s.duration.toFixed(1)}s • ${s.circle.circular? 'Swirl':''} ${s.pinch? 'Pinch':''}`;
+  navigator.clipboard?.writeText(text).then(()=> pop('Result copied to clipboard'), ()=> pop('Copy failed'));
+});
+
+/* sensitivity input changes */
+sensitivityEl.addEventListener('input', ()=> pop('Sensitivity ' + sensitivityEl.value, 900));
+
+/* small UI niceties */
+lipsEl.addEventListener('touchstart', ()=> { if(state.sound) playSmooch(0.12); });
+lipsEl.addEventListener('pointerdown', ()=> { if(state.sound) playSmooch(0.12); });
+
+/* reduce transform when idle */
+setInterval(()=> { lipsEl.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)'; }, 2500);
+
+/* accessibility: keyboard "kiss" */
+lipsEl.tabIndex=0;
+lipsEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { demoBtn.click(); } });
+
+/* small touch of polish: show ready */
+setTimeout(()=> pop('Ready — kiss me!'), 700);
+
+/* cleanup on page hide */
+window.addEventListener('pagehide', ()=> stopHeartbeat());
+
+</script>
+</body>
+</html>
