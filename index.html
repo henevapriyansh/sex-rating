@@ -1,688 +1,218 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
-<title>Kiss Me & I'll Rate You — Supreme Edition 💋🔥</title>
-<style>
-  :root{
-    --bg1: #ffecf0;
-    --bg2: #fff5fb;
-    --accent: #ff2f76;
-    --accent-dark: #c20f52;
-    --glass: rgba(255,255,255,0.6);
-    --card-shadow: 0 10px 30px rgba(0,0,0,0.12);
-    --glass-border: rgba(255,255,255,0.3);
-  }
-  html,body{height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-  body{
-    display:flex; align-items:center; justify-content:center;
-    background: radial-gradient(1200px 600px at 10% 20%, #fff0f4 0%, transparent 10%),
-                radial-gradient(900px 450px at 90% 80%, #fff6f8 0%, transparent 10%),
-                linear-gradient(180deg,var(--bg1),var(--bg2));
-    overflow:hidden;
-  }
-
-  /* Container */
-  .wrap{
-    width:min(980px,94vw); max-width:980px; padding:28px;
-    display:grid; grid-template-columns: 1fr 360px; gap:20px;
-    align-items:start; backdrop-filter: blur(6px);
-  }
-
-  /* Left: main kiss area */
-  .card{
-    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
-    border-radius:20px; padding:22px; box-shadow:var(--card-shadow);
-    border:1px solid var(--glass-border); position:relative; overflow:hidden;
-  }
-
-  .title{
-    display:flex; align-items:center; gap:12px; margin-bottom:10px;
-  }
-  .title h1{font-size:20px; margin:0; color:var(--accent-dark);}
-  .subtitle{font-size:13px; color:#534a4a; opacity:0.9}
-
-  /* lips area */
-  .stage{display:flex; align-items:center; justify-content:center; flex-direction:column; padding:14px;}
-  .lips-wrap{position:relative; width:340px; height:220px; display:flex; align-items:center; justify-content:center;}
-  /* 3D lips - SVG container */
-  .lips{
-    width:320px; height:200px; touch-action: none; user-select:none;
-    transform-origin:center; transition:transform .18s ease;
-  }
-
-  /* animated shine */
-  .shine{pointer-events:none; position:absolute; inset:0; mix-blend-mode:screen;}
-
-  /* floating hearts */
-  .particle-layer{position:absolute; inset:0; pointer-events:none; overflow:hidden;}
-
-  /* imprint */
-  .imprint{
-    position:absolute; width:180px; height:100px; left:50%; top:62%;
-    transform:translate(-50%,-50%) scale(0); opacity:0; border-radius: 90px 90px 36px 36px;
-    background: radial-gradient(ellipse at center, rgba(255,80,140,0.18), rgba(255,0,90,0.08));
-    filter: blur(6px) saturate(1.1);
-    transition: transform .45s cubic-bezier(.2,.9,.2,1), opacity .45s;
-    pointer-events:none;
-  }
-
-  /* Score & details */
-  .score-box{margin-top:14px; text-align:center;}
-  .score-emoji{font-size:48px; transform-origin:center; display:inline-block;}
-  .score-title{font-weight:700; color:var(--accent-dark); margin-top:8px;}
-  .score-details{color:#333; font-size:13px; margin-top:6px; line-height:1.3;}
-
-  /* Right column: controls */
-  .controls{
-    display:flex; flex-direction:column; gap:12px;
-  }
-  .panel{background:linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.5)); border-radius:14px; padding:14px; border:1px solid var(--glass-border);}
-  .panel h3{margin:0 0 8px 0; font-size:14px; color:#222;}
-  .row{display:flex; gap:10px; align-items:center; margin-bottom:8px;}
-  label{font-size:13px; color:#333;}
-
-  .toggle{display:inline-flex; align-items:center; gap:8px;}
-  .switch{width:44px; height:26px; background:#eee; border-radius:20px; position:relative; cursor:pointer;}
-  .switch .knob{position:absolute; left:3px; top:3px; width:20px; height:20px; background:white; border-radius:50%; transition:left .18s; box-shadow:0 3px 8px rgba(0,0,0,.12)}
-  .switch.on{background:linear-gradient(90deg,var(--accent),var(--accent-dark));}
-  .switch.on .knob{left:21px;}
-
-  .slider{width:100%; -webkit-appearance:none; height:8px; border-radius:999px; background:linear-gradient(90deg,#ffd7e6,#ff9ac1); outline:none;}
-  .small{font-size:13px; color:#444;}
-
-  /* popup animation */
-  .pop{
-    position:absolute; left:50%; top:8px; transform:translateX(-50%) translateY(-20px) scale(.95); 
-    background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.6));
-    padding:12px 18px; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.12);
-    border:1px solid var(--glass-border); opacity:0; transition: opacity .25s, transform .25s;
-  }
-  .pop.show{opacity:1; transform:translateX(-50%) translateY(0) scale(1);}
-
-  /* responsive */
-  @media (max-width:900px){
-    .wrap{grid-template-columns:1fr; padding:16px}
-    .lips-wrap{width:86vw}
-  }
-
-  /* small helpers */
-  .muted{color:#6b6b6b; font-size:13px;}
-  .btn{display:inline-flex; gap:8px; align-items:center; padding:8px 12px; border-radius:10px; background:var(--accent); color:white; border:none; cursor:pointer; font-weight:600;}
-  .btn.secondary{background:#fff; color:var(--accent-dark); border:1px solid rgba(0,0,0,0.06)}
-  .tiny{font-size:12px; padding:6px 8px; border-radius:8px;}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Kiss Me Ultra 💋🔥</title>
+  <style>
+    body { margin:0; padding:0; height:100vh; background:#000; overflow:hidden; 
+           display:flex; flex-direction:column; align-items:center; justify-content:center;
+           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    #bg { position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, #ff0066 0%, #330019 70%); 
+          transition: all 1s; filter: blur(40px); opacity:0.9; }
+    #container {
+      position:relative; padding:30px; border-radius:30px;
+      background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+      border:1px solid rgba(255,255,255,0.2); box-shadow:0 20px 50px rgba(0,0,0,0.6);
+      text-align:center; max-width:90%;
+    }
+    #lips {
+      width:300px; height:200px; margin:0 auto; position:relative; cursor:none;
+      background:radial-gradient(ellipse at center, #ff1e6e 0%, #e00b5c 60%, #8f0033 100%);
+      border-radius:0 0 150px 150px / 0 0 100px 100px;
+      box-shadow: 
+        inset 0 -30px 40px rgba(0,0,0,0.5),
+        inset 0 20px 30px rgba(255,100,150,0.4),
+        0 0 60px #ff0066;
+      animation: breathe 6s infinite ease-in-out;
+      transform:scale(1); transition:transform 0.2s;
+    }
+    #lips::before { content:""; position:absolute; top:25%; left:50%; transform:translate(-50%,-50%);
+      width:160px; height:30px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+      border-radius:50%; animation:shine 8s infinite linear; }
+    #lips::after { content:""; position:absolute; inset:0; border-radius:inherit;
+      background:rgba(255,255,255,0.05); pointer-events:none; opacity:0; transition:opacity 0.5s; }
+    .kissmark { position:absolute; width:80px; height:100px; background:rgba(255,20,100,0.25);
+      border-radius:40%; filter:blur(15px); pointer-events:none; opacity:0; transform:translate(-50%,-50%); }
+    #score { margin-top:30px; font-size:32px; font-weight:900; color:#fff; text-shadow:0 0 20px #ff0066; }
+    #details { margin-top:15px; color:#ffaacc; line-height:1.6; font-size:17px; }
+    .heart { display:inline-block; animation: float 3s forwards; opacity:0; }
+    @keyframes breathe { 0%,100% {transform:scale(1)} 50% {transform:scale(1.05)} }
+    @keyframes shine { from {transform:translate(-50%,-50%) translateX(-200px)} to {transform:translate(-50%,-50%) translateX(200px)} }
+    @keyframes float { 0% {transform:translateY(0) scale(0); opacity:1} 100% {transform:translateY(-300px) scale(1.5); opacity:0} }
+    @keyframes pulseRed { from {box-shadow:0 0 60px #ff0066} to {box-shadow:0 0 100px #ff3366} }
+  </style>
 </head>
 <body>
-<div class="wrap" id="app">
-  <div class="card" aria-live="polite">
-    <div class="title">
-      <div>
-        <h1>Kiss Me & I'll Rate You — Supreme Edition</h1>
-        <div class="subtitle">Touch the lips, kiss, swirl, pinch — I'll translate it into passion.</div>
-      </div>
-      <div style="margin-left:auto" class="muted">Mobile friendly • Haptics & Sound</div>
-    </div>
 
-    <div class="stage">
-      <div class="lips-wrap">
-        <!-- SVG lips (3D shaded) -->
-        <svg class="lips" viewBox="0 0 800 500" id="lipsSVG" role="img" aria-label="Kissable lips">
-          <defs>
-            <radialGradient id="g1" cx="40%" cy="35%" r="55%">
-              <stop offset="0%" stop-color="#ff7aa3"/>
-              <stop offset="60%" stop-color="#ff2f76"/>
-              <stop offset="100%" stop-color="#b80a4a"/>
-            </radialGradient>
-            <radialGradient id="g2" cx="60%" cy="70%" r="60%">
-              <stop offset="0%" stop-color="#ffd1df"/>
-              <stop offset="55%" stop-color="rgba(255,255,255,0.05)"/>
-              <stop offset="100%" stop-color="rgba(0,0,0,0.15)"/>
-            </radialGradient>
-            <filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feOffset dx="0" dy="8" result="o"/>
-              <feGaussianBlur stdDeviation="12" in="o" result="blur"/>
-              <feComposite operator="out" in="blur" in2="SourceGraphic" result="comp"/>
-              <feColorMatrix type="matrix" values="0 0 0 0 0.02  0 0 0 0 0.01  0 0 0 0 0.03  0 0 0 0.65" />
-            </filter>
-          </defs>
-
-          <!-- lower lip -->
-          <g id="lowerLip" transform="translate(50,40)">
-            <path d="M40 230 C120 390 360 460 580 380 C720 330 760 230 640 160 
-                     C580 120 420 90 400 110 C360 140 120 90 40 160 Z"
-                  fill="url(#g1)" stroke="#9b0b46" stroke-opacity="0.25" stroke-width="6" filter="url(#innerShadow)"/>
-            <!-- glossy highlight -->
-            <path d="M190 140 C260 110 460 110 520 140 C540 160 420 190 320 185 C260 182 220 160 190 140 Z"
-                  fill="url(#g2)" opacity="0.9"/>
-          </g>
-
-          <!-- upper lip -->
-          <g id="upperLip" transform="translate(50, -40)">
-            <path d="M40 200 C140 70 280 40 400 70 C520 40 660 80 760 200 C700 210 620 220 520 210 
-                     C420 200 300 195 220 205 C160 212 80 215 40 200 Z"
-                  fill="url(#g1)" stroke="#8b0a41" stroke-opacity="0.2" stroke-width="6"/>
-            <path d="M200 120 C300 80 420 80 560 120" stroke="rgba(255,255,255,0.28)" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.9"/>
-          </g>
-
-          <!-- slight gloss overlay -->
-          <g id="shineGroup">
-            <ellipse cx="420" cy="160" rx="80" ry="24" fill="rgba(255,255,255,0.12)" transform="rotate(-12 420 160)"/>
-          </g>
-        </svg>
-
-        <div class="imprint" id="imprintEl" aria-hidden="true"></div>
-
-        <div class="particle-layer" id="particles"></div>
-      </div>
-
-      <div class="score-box">
-        <div class="score-emoji" id="scoreEmoji">💋</div>
-        <div class="score-title" id="scoreTitle">Give the lips a good kiss!</div>
-        <div class="score-details" id="scoreDetails">Kisses: 0 • Longest: 0.0s • Max fingers: 0 • Passion: 0/100</div>
-      </div>
-    </div>
-
-    <div class="pop" id="popup">Ready — kiss me!</div>
-  </div>
-
-  <!-- RIGHT: Controls -->
-  <div class="controls">
-    <div class="panel">
-      <h3>Mode & Sensitivity</h3>
-      <div class="row">
-        <label class="small">NSFW Friendly</label>
-        <div class="toggle" style="margin-left:auto">
-          <div class="switch" id="nsfwSwitch" role="button" tabindex="0" aria-pressed="false">
-            <div class="knob"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row"><label>Haptics (vibrate)</label>
-        <div style="margin-left:auto" class="toggle"><div class="switch" id="vibSwitch"><div class="knob"></div></div></div>
-      </div>
-
-      <div style="margin-top:8px">
-        <label class="small">Sensitivity</label>
-        <input type="range" id="sensitivity" class="slider" min="0.5" max="2.2" step="0.1" value="1">
-        <div class="muted tiny">Higher = easier to trigger high passion</div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>Sound & Feedback</h3>
-      <div class="row"><label>Sound</label>
-        <div style="margin-left:auto" class="toggle"><div class="switch" id="soundSwitch"><div class="knob"></div></div></div>
-      </div>
-      <div class="row"><label>Heartbeat on intense</label>
-        <div style="margin-left:auto" class="toggle"><div class="switch" id="heartSwitch"><div class="knob"></div></div></div>
-      </div>
-
-      <div style="display:flex; gap:8px; margin-top:10px">
-        <button class="btn tiny" id="resetBtn">Reset</button>
-        <button class="btn tiny secondary" id="demoBtn">Demo Kiss</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>What I detect</h3>
-      <div id="detectors" class="muted small">
-        • Pecks • Long kisses • Swirl/Tongue • Pinch/Bite • Rhythm consistency • Pressure control
-      </div>
-      <div style="margin-top:10px; display:flex; gap:8px;">
-        <button class="btn tiny" id="explainBtn">Explain Score</button>
-        <button class="btn tiny secondary" id="shareBtn">Copy Result</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <h3>Tips</h3>
-      <ol style="padding-left:16px; margin:0">
-        <li class="muted small">Quick pecks increase kiss count; long steady pressure raises passion.</li>
-        <li class="muted small">Circular swirls (move finger in rounded paths) unlock "French/Tongue" bonuses.</li>
-        <li class="muted small">Two-finger pinch gestures are detected as nibble/bite style.</li>
-      </ol>
-    </div>
-  </div>
+<div id="bg"></div>
+<div id="container">
+  <div style="color:#ff99cc;font-size:24px;margin-bottom:20px;">👇 Kiss the lips hard 👇</div>
+  <div id="lips"></div>
+  <div id="score"></div>
+  <div id="details"></div>
 </div>
 
+<audio id="smooch" src="https://freesound.org/data/previews/612/612466_5674468-lq.mp3" preload="auto"></audio>
+<audio id="moan" src="https://freesound.org/data/previews/269/269698_5123856-lq.mp3" preload="auto"></audio>
+
 <script>
-/* ========== Utility & State ========== */
-const sensitivityEl = document.getElementById('sensitivity');
-const nsfwSwitch = document.getElementById('nsfwSwitch');
-const vibSwitch = document.getElementById('vibSwitch');
-const soundSwitch = document.getElementById('soundSwitch');
-const heartSwitch = document.getElementById('heartSwitch');
-const resetBtn = document.getElementById('resetBtn');
-const demoBtn = document.getElementById('demoBtn');
-const explainBtn = document.getElementById('explainBtn');
-const shareBtn = document.getElementById('shareBtn');
+  const lips = document.getElementById('lips');
+  const bg = document.getElementById('bg');
+  const scoreEl = document.getElementById('score');
+  const detailsEl = document.getElementById('details');
+  const smooch = document.getElementById('smooch');
+  const moan = document.getElementById('moan');
 
-const lipsSVG = document.getElementById('lipsSVG');
-const lipsEl = document.querySelector('.lips');
-const imprintEl = document.getElementById('imprintEl');
-const particles = document.getElementById('particles');
-const popup = document.getElementById('popup');
-const scoreEmoji = document.getElementById('scoreEmoji');
-const scoreTitle = document.getElementById('scoreTitle');
-const scoreDetails = document.getElementById('scoreDetails');
+  let startTime = 0, lastUp = 0, kissCount = 0;
+  let maxTouches = 0, totalPressure = 0, pressureSamples = 0;
+  let motionHistory = [], lastAngle = 0, circleScore = 0, tapStreak = 0;
+  let lastTapTime = 0, passion = 0;
 
-let state = {
-  kissing: false,
-  startTime: 0,
-  lastUp: 0,
-  touches: [],       // array of {id, x, y, t}
-  maxTouches: 0,
-  totalPressure: 0,
-  pressureSamples: 0,
-  kissCount: 0,
-  longest: 0,
-  passion: 0,
-  lastScore: null,
-  nsfw: false,
-  vibration: true,
-  sound: true,
-  heartbeat: true
-};
+  function vibrate(pattern) {
+    if (navigator.vibrate) navigator.vibrate(pattern);
+  }
+  function playSmooch() { smooch.currentTime=0; smooch.play().catch(()=>{}); }
+  function playMoan() { moan.currentTime=0; moan.volume=0.4; moan.play().catch(()=>{}); }
 
-/* initialize switches */
-function setSwitch(el, on){
-  el.classList.toggle('on', on);
-  el.setAttribute('aria-pressed', String(!!on));
-}
-setSwitch(nsfwSwitch, false);
-setSwitch(vibSwitch, true);
-setSwitch(soundSwitch, true);
-setSwitch(heartSwitch, true);
+  function spawnHeart(x,y) {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.innerText = Math.random()<0.3 ? '🔥' : '💋';
+    h.style.left = x + 'px'; h.style.top = y + 'px';
+    h.style.position = 'fixed'; h.style.pointerEvents = 'none';
+    h.style.fontSize = '40px'; h.style.zIndex = '999';
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(), 3000);
+  }
+  function leaveKissMark(x,y) {
+    const mark = document.createElement('div');
+    mark.className = 'kissmark';
+    mark.style.left = x + 'px'; mark.style.top = y + 'px';
+    lips.appendChild(mark);
+    mark.style.opacity = '0.6';
+    setTimeout(()=>mark.style.opacity='0', 2000);
+    setTimeout(()=>mark.remove(), 3000);
+  }
 
-/* clicks to toggle */
-[nsfwSwitch, vibSwitch, soundSwitch, heartSwitch].forEach(sw=>{
-  sw.addEventListener('click', ()=> {
-    const now = !sw.classList.contains('on');
-    setSwitch(sw, now);
-    if(sw===nsfwSwitch) state.nsfw = now;
-    if(sw===vibSwitch) state.vibration = now;
-    if(sw===soundSwitch) state.sound = now;
-    if(sw===heartSwitch) state.heartbeat = now;
+  function isInsideLips(x,y) {
+    const r = lips.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    const dx = (x-cx)/(r.width/2), dy = (y-cy)/(r.height*0.9);
+    return dx*dx + dy*dy <= 1;
+  }
+
+  function detectCircularMotion(touches) {
+    if (touches.length < 2) return 0;
+    const points = touches.map(t=>({x:t.clientX, y:t.clientY}));
+    const cx = points.reduce((a,p)=>a+p.x,0)/points.length;
+    const cy = points.reduce((a,p)=>a+p.y,0)/points.length;
+    const angles = points.map(p=>Math.atan2(p.y-cy, p.x-cx));
+    const angleDiff = angles.reduce((sum,a,i)=>sum + Math.abs(a - (lastAngle||a)),0);
+    lastAngle = angles[0];
+    return angleDiff > 1.5 ? 30 : 0; // big swirl = French bonus
+  }
+
+  function rateKiss() {
+    const duration = (Date.now() - startTime)/1000;
+    const avgPressure = pressureSamples ? totalPressure/pressureSamples : 0.5;
+    circleScore = Math.max(...motionHistory);
+    const tongueBonus = circleScore > 20 ? 40 : 0;
+    const peckBonus = tapStreak > 8 ? 35 : 0;
+    const pinchBonus = maxTouches >= 2 && motionHistory.some(m=>m<0) ? 25 : 0; // negative = pinch detected
+
+    passion = Math.min(100,
+      (maxTouches*15) + (duration*7) + (avgPressure*50) + tongueBonus + peckBonus + pinchBonus + (kissCount*3)
+    );
+
+    // Visual heat
+    lips.style.boxShadow = passion>90 ? '0 0 100px #ff0066, inset 0 -30px 40px rgba(0,0,0,0.6)' : 
+                          '0 0 60px #ff0066, inset 0 -30px 40px rgba(0,0,0,0.5)';
+    bg.style.background = passion>90 ? 'radial-gradient(circle at 50% 50%, #ff0066 0%, #000 70%)' :
+                         passion>70 ? 'radial-gradient(circle at 50% 50%, #cc0055 0%, #220011 70%)' : 
+                         'radial-gradient(circle at 50% 50%, #ff0066 0%, #330019 70%)';
+    if (passion>=100) { lips.style.animation = 'pulseRed 0.5s infinite'; playMoan(); vibrate([200,100,300,100,500]); }
+
+    // NSFW ratings
+    let title = "", emoji = "";
+    if (passion >= 100) { title="🔥 OVERHEAT MODE — YOU BROKE ME 🔥"; emoji="😈💦"; playMoan(); }
+    else if (tongueBonus>30 && passion>85) { title="Perfect French Expert 👅"; emoji="🥵💜"; }
+    else if (pinchBonus>20) { title="Bite-and-Suck Master 🫦"; emoji="😈🖤"; }
+    else if (passion>90) { title="Bedroom-Level Passion"; emoji="🔥💋"; }
+    else if (passion>75) { title="Dominant Kisser 😏"; emoji="👑"; }
+    else if (passion>60) { title="Dangerously Addictive"; emoji="💉❤️"; }
+    else if (tapStreak>10) { title="Peck Storm Champion 😘×999"; emoji="🌪️"; }
+    else { title="Tease Me More…"; emoji="🥺💋"; }
+
+    scoreEl.innerHTML = `<div style="font-size:50px">${emoji}</div>${title}`;
+    detailsEl.innerHTML = `
+      Passion Heat: ${passion.toFixed(0)}/100 🔥<br>
+      Rhythm: ${tapStreak>8?"Insane":"Good"} • 
+      Pressure Control: ${(avgPressure*100).toFixed(0)}%<br>
+      Intimacy: ${maxTouches>=2?"Full lips":"Shy"} • 
+      Tongue Simulation: ${tongueBonus>20?"Expert 👅":"—"}<br>
+      Total Kisses: ${kissCount}
+    `;
+  }
+
+  lips.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const valid = Array.from(e.touches).filter(t=>isInsideLips(t.clientX,t.clientY));
+    if (!valid.length) return;
+
+    if (!startTime || Date.now()-lastUp>800) {
+      if (startTime) kissCount++;
+      startTime = Date.now();
+      motionHistory = []; tapStreak = 0;
+    }
+    maxTouches = Math.max(maxTouches, valid.length);
+    valid.forEach(t => {
+      spawnHeart(t.clientX, t.clientY);
+      leaveKissMark(t.clientX, t.clientY);
+      if (t.force) { totalPressure += t.force; pressureSamples++; }
+      lips.style.transform = `scale(${1 + (t.force||0.3)*0.2})`;
+    });
+
+    // Detect fast taps (pecks)
+    if (Date.now() - lastTapTime < 300) tapStreak++;
+    lastTapTime = Date.now();
+
+    // Detect swirl / pinch
+    const swirl = detectCircularMotion(valid);
+    motionHistory.push(valid.length>=2 && e.scale<1 ? -30 : swirl);
+
+    vibrate([50,30,50]);
+    playSmooch();
+  }, {passive:false});
+
+  lips.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const avgForce = Array.from(e.touches).reduce((a,t)=>a+(t.force||0.5),0)/e.touches.length;
+    lips.style.transform = `scale(${1 + avgForce*0.25})`;
+  }, {passive:false});
+
+  lips.addEventListener('touchend', e => {
+    lips.style.transform = 'scale(1)';
+    if (startTime && e.touches.length===0) {
+      lastUp = Date.now();
+      setTimeout(() => {
+        if (Date.now()-lastUp >= 1200) {
+          rateKiss();
+          vibrate(passion>90 ? [300,100,300] : [100]);
+          setTimeout(reset, 5000);
+        }
+      }, 1500);
+    }
   });
-  sw.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); sw.click(); }});
-});
 
-/* popup helper */
-function pop(msg, ms=1600){
-  popup.textContent = msg;
-  popup.classList.add('show');
-  setTimeout(()=>popup.classList.remove('show'), ms);
-}
-
-/* device vibration */
-function vibrate(pattern){
-  if(!state.vibration || !('vibrate' in navigator)) return;
-  try{ navigator.vibrate(pattern); }catch(e){}
-}
-
-/* ========== WebAudio Synth for kiss & heartbeat ========== */
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx;
-function ensureAudio(){
-  if(!audioCtx) audioCtx = new AudioCtx();
-}
-function playSmooch(intensity=0.6){
-  if(!state.sound) return;
-  ensureAudio();
-  const ctx = audioCtx;
-  // small burst of bandpassed noise to simulate smooch
-  const bufferSize = 2*ctx.sampleRate;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for(let i=0;i<bufferSize;i++){
-    data[i] = (Math.random()*2-1) * Math.exp(-4*i/bufferSize) * intensity;
+  function reset() {
+    scoreEl.innerHTML = '<div style="color:#ff99cc;font-size:24px">Again? I dare you 😈</div>';
+    detailsEl.textContent = '';
+    setTimeout(()=>scoreEl.innerHTML='',3000);
+    kissCount = maxTouches = totalPressure = pressureSamples = passion = 0;
+    motionHistory = []; tapStreak = 0;
+    lips.style.animation = 'breathe 6s infinite ease-in-out';
   }
-  const noise = ctx.createBufferSource(); noise.buffer = buffer;
-  const bp = ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value = 1200;
-  const gain = ctx.createGain(); gain.gain.value = 0.8*intensity;
-  noise.connect(bp); bp.connect(gain); gain.connect(ctx.destination);
-  noise.start();
-  noise.stop(ctx.currentTime + 0.25);
-}
-let heartbeatNode = null;
-function startHeartbeat(intensity=0.6){
-  if(!state.sound || !state.heartbeat) return;
-  ensureAudio();
-  if(heartbeatNode) return;
-  const ctx = audioCtx;
-  const osc = ctx.createOscillator(); osc.type='sine';
-  const gain = ctx.createGain(); gain.gain.value = 0;
-  osc.frequency.value = 60; // low tone
-  osc.connect(gain); gain.connect(ctx.destination);
-  osc.start();
-  heartbeatNode = {osc,gain};
-  // pulse rhythm
-  let beat = 0;
-  function pulse(){
-    if(!heartbeatNode) return;
-    heartbeatNode.gain.gain.cancelScheduledValues(ctx.currentTime);
-    heartbeatNode.gain.gain.setValueAtTime(0, ctx.currentTime);
-    heartbeatNode.gain.gain.linearRampToValueAtTime(intensity*0.22, ctx.currentTime+0.02);
-    heartbeatNode.gain.gain.linearRampToValueAtTime(0, ctx.currentTime+0.18);
-    beat++;
-    // next beat scheduling
-    const interval = beat%2===0 ? 0.45 : 0.45; // steady
-    setTimeout(pulse, interval*1000);
-  }
-  pulse();
-}
-function stopHeartbeat(){
-  if(!heartbeatNode) return;
-  try{ heartbeatNode.osc.stop(); }catch(e){}
-  heartbeatNode = null;
-}
-
-/* ========== Particles (floating hearts) ========== */
-function spawnHeart(x, y, intensity=1){
-  const d = document.createElement('div');
-  const size = 18 + Math.round(22*intensity);
-  d.innerText = state.nsfw ? '💖' : '💗';
-  d.style.position='absolute';
-  d.style.left = (x - size/2) + 'px';
-  d.style.top = (y - size/2) + 'px';
-  d.style.fontSize = size+'px';
-  d.style.opacity = 0.95;
-  d.style.pointerEvents='none';
-  d.style.transform = `translateY(0) scale(${0.8 + Math.random()*0.4})`;
-  particles.appendChild(d);
-  const dx = (Math.random()*160 - 80)*intensity;
-  const dy = -120 - Math.random()*80*intensity;
-  const rot = (Math.random()*80 - 40);
-  d.animate([
-    { transform: d.style.transform, opacity:0.95 },
-    { transform:`translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(1.2)`, opacity:0.02 }
-  ], {duration: 1200 + Math.random()*600, easing:'cubic-bezier(.2,.7,.2,1)'});
-  setTimeout(()=>d.remove(), 2200);
-}
-
-/* ========== Gesture/Tap tracking ========== */
-let pointerMap = new Map(); // pointerId -> {x,y,history:[],startT}
-let lastTouchTime=0;
-
-function pt(e){
-  return {x:e.clientX, y:e.clientY, t:Date.now(), id: (e.pointerId ?? 'm')};
-}
-function distance(a,b){ const dx=a.x-b.x, dy=a.y-b.y; return Math.sqrt(dx*dx+dy*dy); }
-
-/* circle detection helper: compute centroid and radial variance */
-function analyzeCircular(history){
-  if(history.length<8) return {circular:false, score:0};
-  // compute centroid
-  const cx = history.reduce((s,p)=>s+p.x,0)/history.length;
-  const cy = history.reduce((s,p)=>s+p.y,0)/history.length;
-  const rs = history.map(p=>Math.hypot(p.x-cx,p.y-cy));
-  const meanR = rs.reduce((a,b)=>a+b,0)/rs.length;
-  const varR = rs.reduce((a,b)=>a + (b-meanR)*(b-meanR), 0) / rs.length;
-  const circularity = Math.max(0, 1 - Math.min(1, varR / (meanR*meanR + 1)));
-  return {circular: circularity>0.5, score: Math.round(circularity*100)};
-}
-
-/* rhythm consistency: measure timing between taps/up events */
-let tapTimes = [];
-function registerTap(){
-  const t = Date.now();
-  tapTimes.push(t);
-  if(tapTimes.length>8) tapTimes.shift();
-}
-
-/* pinch detection - distance change between two pointers */
-function detectPinch(){
-  if(pointerMap.size<2) return false;
-  const pts = Array.from(pointerMap.values());
-  const d0 = distance(pts[0].start, pts[1].start);
-  const dNow = distance(pts[0], pts[1]);
-  const r = dNow/d0;
-  // if fingers moved closer quickly -> pinch
-  return r < 0.8;
-}
-
-/* main scoring once user releases */
-function finalizeKiss(){
-  const s = state;
-  if(!s.startTime) return;
-  const duration = (Date.now() - s.startTime)/1000;
-  s.longest = Math.max(s.longest, duration);
-  const avgPressure = s.pressureSamples ? s.totalPressure / s.pressureSamples : 0.55;
-  // gesture detection
-  const histories = Array.from(pointerMap.values()).map(v => v.history || []);
-  // combine histories
-  const combined = [].concat(...histories);
-  const circle = analyzeCircular(combined);
-  const pinch = detectPinch();
-  const peckMode = (s.kissCount >= 5 && duration < 4) || (tapTimes.length >= 4 && (tapTimes[tapTimes.length-1]-tapTimes[0])<3000);
-  // base passion calculation
-  const base = (s.maxTouches * 18) + (Math.min(8,duration) * 10) + (avgPressure * 40) + (combined.length*0.12);
-  const rng = Math.random()*6;
-  let passion = base * Number(sensitivityEl.value) + rng;
-  // bonuses
-  if(circle.circular) passion += 18 + circle.score*0.12;
-  if(pinch) passion += 12;
-  if(peckMode) passion += 6;
-  // rhythm consistency bonus (low stddev between taps)
-  if(tapTimes.length>=3){
-    const diffs = [];
-    for(let i=1;i<tapTimes.length;i++) diffs.push(tapTimes[i]-tapTimes[i-1]);
-    const mean = diffs.reduce((a,b)=>a+b,0)/diffs.length;
-    const varr = diffs.reduce((a,b)=>a+(b-mean)*(b-mean),0)/diffs.length;
-    const consistency = 1 - Math.min(1, varr/(mean*mean+1));
-    passion += consistency*12;
-  }
-
-  passion = Math.max(0, Math.min(100, Math.round(passion)));
-
-  s.passion = passion;
-  s.lastScore = {passion, duration, avgPressure, circle, pinch, peckMode, kisses: s.kissCount};
-  // show results
-  showScore(s.lastScore);
-
-  // imprint & particles
-  showImprint(passsionSafe(passion));
-  for(let i=0;i<6;i++) spawnHeart(window.innerWidth*0.5 + (Math.random()*220-110), window.innerHeight*0.45 + (Math.random()*80-40), Math.min(1,passion/100));
-
-  // sound & haptics
-  if(state.sound) playSmooch(Math.min(1, passion/90));
-  if(state.vibration) {
-    if(passion>85) vibrate([30,40,60]);
-    else if(passion>60) vibrate([20,30]);
-    else vibrate(18);
-  }
-  if(passion>88 && state.heartbeat) startHeartbeat(Math.min(0.8, passion/120));
-  else stopHeartbeat();
-
-  // update counters
-  s.kissCount++;
-  s.startTime = 0;
-  pointerMap.clear();
-  tapTimes = [];
-  lastTouchTime = Date.now();
-}
-
-/* show score UI */
-function showScore({passion,duration,avgPressure,circle,pinch,peckMode,kisses}){
-  const emoji = passion>90 ? '💥❤️‍🔥' : passion>75 ? '🥵💜' : passion>60 ? '😈💋' : passion>40 ? '🥰' : passion>20 ? '😊' : '😚';
-  scoreEmoji.textContent = emoji;
-  const title = passion>95 ? 'HOLY FIREWORKS!!' :
-                passion>80 ? 'French-Level Passionate' :
-                passion>65 ? 'Very Naughty' :
-                passion>45 ? 'Sweet & Loving' :
-                passion>25 ? 'Shy First Kiss' : 'Butterfly Kiss';
-  scoreTitle.textContent = state.nsfw ? (title + (passion>90 ? ' 🔥 Overheat' : '')) : title;
-  scoreDetails.innerHTML = `Kisses: ${kisses} • Longest: ${duration.toFixed(1)}s • Max fingers: ${state.maxTouches} • Passion score: ${passion}/100`;
-
-  // popup message
-  const det = [];
-  if(circle.circular) det.push('Tongue/Swirl detected');
-  if(pinch) det.push('Pinch/Bite moves');
-  if(peckMode) det.push('Peck storm');
-  if(avgPressure>0.7) det.push('Strong pressure');
-  pop(det.length? det.join(' • '): 'Nice one!', 1600);
-}
-
-/* imprint visual */
-function showImprint(passion){
-  imprintEl.style.transform = 'translate(-50%,-50%) scale(1)';
-  imprintEl.style.opacity = String(Math.min(0.92, 0.05 + passion/120));
-  setTimeout(()=>{ imprintEl.style.transform='translate(-50%,-50%) scale(0)'; imprintEl.style.opacity='0'; }, 2400);
-}
-
-/* small helper to clamp passion for visuals */
-function passsionSafe(p){ return Math.max(0, Math.min(100, p)); }
-
-/* ========== Pointer / Touch handling ========== */
-function onPointerDown(e){
-  e.preventDefault();
-  const id = e.pointerId ?? 'm';
-  const p = {x: e.clientX, y: e.clientY, t: Date.now(), start:{x:e.clientX,y:e.clientY}, history: [{x:e.clientX,y:e.clientY,t:Date.now()}], pressure: e.pressure ?? (e.force ?? 0.5)};
-  p.start = {x:e.clientX, y:e.clientY};
-  pointerMap.set(id, p);
-  state.maxTouches = Math.max(state.maxTouches, pointerMap.size);
-  state.startTime = state.startTime || Date.now();
-  state.touches.push(p);
-  state.pressureSamples += (e.pressure?1:0);
-  if(e.pressure) { state.totalPressure += e.pressure; state.pressureSamples++; }
-  // small feedback
-  spawnHeart(e.clientX, e.clientY, 0.6);
-  if(state.vibration) vibrate(10);
-  if(state.sound) playSmooch(0.18);
-
-  // mouse quick tap detection
-  if((Date.now() - lastTouchTime) < 700){
-    registerTap();
-  }
-}
-function onPointerMove(e){
-  if(!pointerMap.has(e.pointerId)) return;
-  const p = pointerMap.get(e.pointerId);
-  p.x = e.clientX; p.y = e.clientY; p.t = Date.now();
-  p.history.push({x:e.clientX, y:e.clientY, t:Date.now()});
-  // store pressure if available
-  if(e.pressure) { state.totalPressure += e.pressure; state.pressureSamples++; }
-  // visual: tilt lips according to movement
-  const dx = (e.clientX - (window.innerWidth/2));
-  const dy = (e.clientY - (window.innerHeight/2));
-  const tiltX = Math.max(-10, Math.min(10, -dy/40));
-  const tiltY = Math.max(-12, Math.min(12, dx/40));
-  lipsEl.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(${1+Math.min(0.06, Math.hypot(dx,dy)/3000)})`;
-}
-function onPointerUp(e){
-  // finalize single pointer
-  if(pointerMap.has(e.pointerId)){
-    // register tap if short touch
-    const p = pointerMap.get(e.pointerId);
-    const d = Date.now() - (p.history[0].t||p.t);
-    if(d < 300 && (p.history.length<6)) registerTap();
-    pointerMap.delete(e.pointerId);
-  } else {
-    // mouse (no pointerId)
-    // best effort
-  }
-  // if all pointers released: finalize kiss after a delay
-  if(pointerMap.size === 0){
-    // set lastUp then finalize after a small pause to interpret pecks vs long kiss
-    setTimeout(()=> {
-      if(pointerMap.size === 0) finalizeKiss();
-    }, 900);
-  }
-}
-
-/* Support for older touch/mouse events */
-function bindPointerEvents(){
-  // prefer pointer events
-  if(window.PointerEvent){
-    lipsEl.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
-  } else {
-    // touch
-    lipsEl.addEventListener('touchstart', function(ev){
-      Array.from(ev.changedTouches).forEach(t=> onPointerDown({pointerId:t.identifier, clientX:t.clientX, clientY:t.clientY, pressure: t.force || 0.5, preventDefault: ()=>ev.preventDefault()}));
-    }, {passive:false});
-    window.addEventListener('touchmove', function(ev){
-      Array.from(ev.changedTouches).forEach(t=> onPointerMove({pointerId:t.identifier, clientX:t.clientX, clientY:t.clientY, pressure: t.force || 0.5}));
-    }, {passive:false});
-    window.addEventListener('touchend', function(ev){
-      Array.from(ev.changedTouches).forEach(t=> onPointerUp({pointerId:t.identifier}));
-    });
-    // mouse
-    let mouseDown = false;
-    lipsEl.addEventListener('mousedown', function(ev){
-      mouseDown = true; onPointerDown({pointerId:'m', clientX:ev.clientX, clientY:ev.clientY, pressure:0.5, preventDefault: ()=>ev.preventDefault()});
-    });
-    window.addEventListener('mousemove', function(ev){ if(mouseDown) onPointerMove({pointerId:'m', clientX:ev.clientX, clientY:ev.clientY, pressure:0.5}); });
-    window.addEventListener('mouseup', function(ev){ if(mouseDown) { mouseDown=false; onPointerUp({pointerId:'m'}); }});
-  }
-}
-bindPointerEvents();
-
-/* reset */
-resetBtn.addEventListener('click', ()=>{
-  state = { ...state, kissing:false, startTime:0, lastUp:0, touches:[], maxTouches:0, totalPressure:0, pressureSamples:0, kissCount:0, longest:0, passion:0, lastScore:null, nsfw:state.nsfw, vibration:state.vibration, sound:state.sound, heartbeat:state.heartbeat };
-  scoreEmoji.textContent='💋'; scoreTitle.textContent='Give the lips a good kiss!'; scoreDetails.textContent='Kisses: 0 • Longest: 0.0s • Max fingers: 0 • Passion: 0/100';
-  pop('Reset — ready');
-  stopHeartbeat();
-});
-
-/* demo */
-demoBtn.addEventListener('click', ()=>{
-  // simulate a long passionate kiss
-  state.maxTouches = 2;
-  state.totalPressure = 1.6; state.pressureSamples = 2;
-  state.startTime = Date.now() - 4500;
-  pointerMap.set('d1', {start:{x:100,y:100}, x:100,y:100, history: Array.from({length:40}, (_,i)=>({x:350+Math.sin(i/6)*40, y:220+Math.cos(i/6)*28, t:Date.now()- (40-i)*60}))});
-  finalizeKiss();
-});
-
-/* explain & share */
-explainBtn.addEventListener('click', ()=>{
-  if(!state.lastScore){ pop('No kiss yet — try one!'); return; }
-  const s = state.lastScore;
-  const parts = [
-    `Passion ${s.passion}/100`,
-    `Duration ${s.duration.toFixed(1)}s`,
-    `Pressure ${(s.avgPressure||0).toFixed(2)}`,
-    s.circle.circular ? `Swirl(${s.circle.score})` : '',
-    s.pinch ? 'Pinch detected' : '',
-    s.peckMode ? 'Peck pattern' : ''
-  ].filter(Boolean);
-  pop(parts.join(' • '), 3000);
-});
-
-shareBtn.addEventListener('click', ()=>{
-  const s = state.lastScore;
-  if(!s){ pop('No result yet'); return; }
-  const text = `Kissed: Passion ${s.passion}/100 • ${s.duration.toFixed(1)}s • ${s.circle.circular? 'Swirl':''} ${s.pinch? 'Pinch':''}`;
-  navigator.clipboard?.writeText(text).then(()=> pop('Result copied to clipboard'), ()=> pop('Copy failed'));
-});
-
-/* sensitivity input changes */
-sensitivityEl.addEventListener('input', ()=> pop('Sensitivity ' + sensitivityEl.value, 900));
-
-/* small UI niceties */
-lipsEl.addEventListener('touchstart', ()=> { if(state.sound) playSmooch(0.12); });
-lipsEl.addEventListener('pointerdown', ()=> { if(state.sound) playSmooch(0.12); });
-
-/* reduce transform when idle */
-setInterval(()=> { lipsEl.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)'; }, 2500);
-
-/* accessibility: keyboard "kiss" */
-lipsEl.tabIndex=0;
-lipsEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { demoBtn.click(); } });
-
-/* small touch of polish: show ready */
-setTimeout(()=> pop('Ready — kiss me!'), 700);
-
-/* cleanup on page hide */
-window.addEventListener('pagehide', ()=> stopHeartbeat());
-
 </script>
 </body>
 </html>
