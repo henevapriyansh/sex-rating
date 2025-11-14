@@ -1,217 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Kiss Me Ultra 💋🔥</title>
-  <style>
-    body { margin:0; padding:0; height:100vh; background:#000; overflow:hidden; 
-           display:flex; flex-direction:column; align-items:center; justify-content:center;
-           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-    #bg { position:fixed; inset:0; background:radial-gradient(circle at 50% 50%, #ff0066 0%, #330019 70%); 
-          transition: all 1s; filter: blur(40px); opacity:0.9; }
-    #container {
-      position:relative; padding:30px; border-radius:30px;
-      background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
-      border:1px solid rgba(255,255,255,0.2); box-shadow:0 20px 50px rgba(0,0,0,0.6);
-      text-align:center; max-width:90%;
-    }
-    #lips {
-      width:300px; height:200px; margin:0 auto; position:relative; cursor:none;
-      background:radial-gradient(ellipse at center, #ff1e6e 0%, #e00b5c 60%, #8f0033 100%);
-      border-radius:0 0 150px 150px / 0 0 100px 100px;
-      box-shadow: 
-        inset 0 -30px 40px rgba(0,0,0,0.5),
-        inset 0 20px 30px rgba(255,100,150,0.4),
-        0 0 60px #ff0066;
-      animation: breathe 6s infinite ease-in-out;
-      transform:scale(1); transition:transform 0.2s;
-    }
-    #lips::before { content:""; position:absolute; top:25%; left:50%; transform:translate(-50%,-50%);
-      width:160px; height:30px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-      border-radius:50%; animation:shine 8s infinite linear; }
-    #lips::after { content:""; position:absolute; inset:0; border-radius:inherit;
-      background:rgba(255,255,255,0.05); pointer-events:none; opacity:0; transition:opacity 0.5s; }
-    .kissmark { position:absolute; width:80px; height:100px; background:rgba(255,20,100,0.25);
-      border-radius:40%; filter:blur(15px); pointer-events:none; opacity:0; transform:translate(-50%,-50%); }
-    #score { margin-top:30px; font-size:32px; font-weight:900; color:#fff; text-shadow:0 0 20px #ff0066; }
-    #details { margin-top:15px; color:#ffaacc; line-height:1.6; font-size:17px; }
-    .heart { display:inline-block; animation: float 3s forwards; opacity:0; }
-    @keyframes breathe { 0%,100% {transform:scale(1)} 50% {transform:scale(1.05)} }
-    @keyframes shine { from {transform:translate(-50%,-50%) translateX(-200px)} to {transform:translate(-50%,-50%) translateX(200px)} }
-    @keyframes float { 0% {transform:translateY(0) scale(0); opacity:1} 100% {transform:translateY(-300px) scale(1.5); opacity:0} }
-    @keyframes pulseRed { from {box-shadow:0 0 60px #ff0066} to {box-shadow:0 0 100px #ff3366} }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tease Me Slowly ▼</title>
+<style>
+  body {margin:0;height:100vh;background:#000;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  #bg {position:fixed;inset:0;background:radial-gradient(circle at 50% 60%, #ff3366 0%, #000 80%);transition:1s;filter:blur(50px);}
+  #card {position:relative;padding:40px;border-radius:40px;background:rgba(20,0,15,0.6);backdrop-filter:blur(20px);border:1px solid rgba(255,50,100,0.3);box-shadow:0 30px 80px rgba(0,0,0,0.8);}
+  #vulva {
+    width:280px;height:360px;margin:0 auto;position:relative;
+    background:radial-gradient(ellipse at 40% 60%, #ff6699 0%, #cc0044 50%, #440022 100%);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow:inset 0 -40px 60px rgba(0,0,0,0.6), inset 0 30px 40px rgba(255,100,150,0.3), 0 0 80px #ff0066;
+    animation:wet 8s infinite ease-in-out;
+  }
+  #vulva::before {content:"";position:absolute;top:15%;left:50%;transform:translateX(-50%);width:100px;height:180px;background:linear-gradient(0deg, rgba(255,255,255,0.15), transparent);border-radius:50%;animation:glisten 6s infinite;}
+  #clit {position:absolute;top:18%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;background:radial-gradient(circle, #ff99bb 0%, #ff3366 100%);border-radius:50%;box-shadow:0 0 30px #ff0066;}
+  .drip {position:absolute;width:6px;height:20px;background:rgba(255,255,255,0.4);border-radius:50%;pointer-events:none;animation:drip 2s forwards;}
+  #score {margin-top:40px;font-size:36px;font-weight:900;color:#fff;text-shadow:0 0 20px #ff0066;}
+  #details {margin-top:20px;color:#ff99cc;font-size:18px;line-height:1.8;}
+  @keyframes wet {0%,100%{transform:scale(1)} 50%{transform:scale(1.03)}}
+  @keyframes glisten {from{transform:translateX(-50%) translateY(-10px)} to{transform:translateX(-50%) translateY(10px)}}
+  @keyframes drip {0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(200px)}}
+</style>
 </head>
 <body>
 
 <div id="bg"></div>
-<div id="container">
-  <div style="color:#ff99cc;font-size:24px;margin-bottom:20px;">👇 Kiss the lips hard 👇</div>
-  <div id="lips"></div>
+<div id="card">
+  <div style="color:#ff6699;font-size:22px;margin-bottom:20px">Use just the tip… slowly ▼</div>
+  <div id="vulva"><div id="clit"></div></div>
   <div id="score"></div>
   <div id="details"></div>
 </div>
 
-<audio id="smooch" src="https://freesound.org/data/previews/612/612466_5674468-lq.mp3" preload="auto"></audio>
-<audio id="moan" src="https://freesound.org/data/previews/269/269698_5123856-lq.mp3" preload="auto"></audio>
+<audio id="wet" src="https://freesound.org/data/previews/612/612926_5674468-lq.mp3" preload="auto"></audio>
+<audio id="gasp" src="https://freesound.org/data/previews/269/269026_5123856-lq.mp3" preload="auto"></audio>
 
 <script>
-  const lips = document.getElementById('lips');
+  const vulva = document.getElementById('vulva');
+  const clit = document.getElementById('clit');
   const bg = document.getElementById('bg');
   const scoreEl = document.getElementById('score');
   const detailsEl = document.getElementById('details');
-  const smooch = document.getElementById('smooch');
-  const moan = document.getElementById('moan');
+  const wet = document.getElementById('wet');
+  const gasp = document.getElementById('gasp');
 
-  let startTime = 0, lastUp = 0, kissCount = 0;
-  let maxTouches = 0, totalPressure = 0, pressureSamples = 0;
-  let motionHistory = [], lastAngle = 0, circleScore = 0, tapStreak = 0;
-  let lastTapTime = 0, passion = 0;
+  let startTime = 0, lastUp = 0, strokeCount = 0;
+  let speedScore = 0, pressureScore = 0, clitHits = 0;
+  let totalPressure = 0, samples = 0;
 
-  function vibrate(pattern) {
-    if (navigator.vibrate) navigator.vibrate(pattern);
-  }
-  function playSmooch() { smooch.currentTime=0; smooch.play().catch(()=>{}); }
-  function playMoan() { moan.currentTime=0; moan.volume=0.4; moan.play().catch(()=>{}); }
+  function vibrate(p) { if(navigator.vibrate) navigator.vibrate(p); }
+  function playWet() { wet.currentTime=0; wet.play().catch(()=>{}); }
+  function playGasp() { gasp.currentTime=0; gasp.volume=0.5; gasp.play().catch(()=>{}); }
 
-  function spawnHeart(x,y) {
-    const h = document.createElement('div');
-    h.className = 'heart';
-    h.innerText = Math.random()<0.3 ? '🔥' : '💋';
-    h.style.left = x + 'px'; h.style.top = y + 'px';
-    h.style.position = 'fixed'; h.style.pointerEvents = 'none';
-    h.style.fontSize = '40px'; h.style.zIndex = '999';
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(), 3000);
-  }
-  function leaveKissMark(x,y) {
-    const mark = document.createElement('div');
-    mark.className = 'kissmark';
-    mark.style.left = x + 'px'; mark.style.top = y + 'px';
-    lips.appendChild(mark);
-    mark.style.opacity = '0.6';
-    setTimeout(()=>mark.style.opacity='0', 2000);
-    setTimeout(()=>mark.remove(), 3000);
+  function spawnDrip(x,y) {
+    const d = document.createElement('div'); d.className='drip';
+    d.style.left=x+'px'; d.style.top=y+'px'; document.body.appendChild(d);
+    setTimeout(()=>d.remove(),2000);
   }
 
-  function isInsideLips(x,y) {
-    const r = lips.getBoundingClientRect();
-    const cx = r.left + r.width/2, cy = r.top + r.height/2;
-    const dx = (x-cx)/(r.width/2), dy = (y-cy)/(r.height*0.9);
-    return dx*dx + dy*dy <= 1;
+  function isOnClit(x,y) {
+    const r = clit.getBoundingClientRect();
+    const dx = x - (r.left+r.width/2), dy = y - (r.top+r.height/2);
+    return Math.sqrt(dx*dx + dy*dy) < 40;
   }
 
-  function detectCircularMotion(touches) {
-    if (touches.length < 2) return 0;
-    const points = touches.map(t=>({x:t.clientX, y:t.clientY}));
-    const cx = points.reduce((a,p)=>a+p.x,0)/points.length;
-    const cy = points.reduce((a,p)=>a+p.y,0)/points.length;
-    const angles = points.map(p=>Math.atan2(p.y-cy, p.x-cx));
-    const angleDiff = angles.reduce((sum,a,i)=>sum + Math.abs(a - (lastAngle||a)),0);
-    lastAngle = angles[0];
-    return angleDiff > 1.5 ? 30 : 0; // big swirl = French bonus
-  }
-
-  function rateKiss() {
-    const duration = (Date.now() - startTime)/1000;
-    const avgPressure = pressureSamples ? totalPressure/pressureSamples : 0.5;
-    circleScore = Math.max(...motionHistory);
-    const tongueBonus = circleScore > 20 ? 40 : 0;
-    const peckBonus = tapStreak > 8 ? 35 : 0;
-    const pinchBonus = maxTouches >= 2 && motionHistory.some(m=>m<0) ? 25 : 0; // negative = pinch detected
-
-    passion = Math.min(100,
-      (maxTouches*15) + (duration*7) + (avgPressure*50) + tongueBonus + peckBonus + pinchBonus + (kissCount*3)
-    );
-
-    // Visual heat
-    lips.style.boxShadow = passion>90 ? '0 0 100px #ff0066, inset 0 -30px 40px rgba(0,0,0,0.6)' : 
-                          '0 0 60px #ff0066, inset 0 -30px 40px rgba(0,0,0,0.5)';
-    bg.style.background = passion>90 ? 'radial-gradient(circle at 50% 50%, #ff0066 0%, #000 70%)' :
-                         passion>70 ? 'radial-gradient(circle at 50% 50%, #cc0055 0%, #220011 70%)' : 
-                         'radial-gradient(circle at 50% 50%, #ff0066 0%, #330019 70%)';
-    if (passion>=100) { lips.style.animation = 'pulseRed 0.5s infinite'; playMoan(); vibrate([200,100,300,100,500]); }
-
-    // NSFW ratings
-    let title = "", emoji = "";
-    if (passion >= 100) { title="🔥 OVERHEAT MODE — YOU BROKE ME 🔥"; emoji="😈💦"; playMoan(); }
-    else if (tongueBonus>30 && passion>85) { title="Perfect French Expert 👅"; emoji="🥵💜"; }
-    else if (pinchBonus>20) { title="Bite-and-Suck Master 🫦"; emoji="😈🖤"; }
-    else if (passion>90) { title="Bedroom-Level Passion"; emoji="🔥💋"; }
-    else if (passion>75) { title="Dominant Kisser 😏"; emoji="👑"; }
-    else if (passion>60) { title="Dangerously Addictive"; emoji="💉❤️"; }
-    else if (tapStreak>10) { title="Peck Storm Champion 😘×999"; emoji="🌪️"; }
-    else { title="Tease Me More…"; emoji="🥺💋"; }
-
-    scoreEl.innerHTML = `<div style="font-size:50px">${emoji}</div>${title}`;
-    detailsEl.innerHTML = `
-      Passion Heat: ${passion.toFixed(0)}/100 🔥<br>
-      Rhythm: ${tapStreak>8?"Insane":"Good"} • 
-      Pressure Control: ${(avgPressure*100).toFixed(0)}%<br>
-      Intimacy: ${maxTouches>=2?"Full lips":"Shy"} • 
-      Tongue Simulation: ${tongueBonus>20?"Expert 👅":"—"}<br>
-      Total Kisses: ${kissCount}
-    `;
-  }
-
-  lips.addEventListener('touchstart', e => {
+  let lastX=0, lastY=0, lastT=0;
+  vulva.addEventListener('touchstart', e=>{
     e.preventDefault();
-    const valid = Array.from(e.touches).filter(t=>isInsideLips(t.clientX,t.clientY));
-    if (!valid.length) return;
+    const t = e.touches[0];
+    if(!t) return;
+    if(!startTime || Date.now()-lastUp>1000) { startTime=Date.now(); strokeCount++; }
+    if(isOnClit(t.clientX,t.clientY)) { clitHits++; clit.style.boxShadow='0 0 50px #ff0066'; }
+    if(t.force){ totalPressure += t.force; samples++; }
+    lastX=t.clientX; lastY=t.clientY; lastT=Date.now();
+    vibrate([60]);
+    playWet();
+    spawnDrip(t.clientX,t.clientY+100);
+  },{passive:false});
 
-    if (!startTime || Date.now()-lastUp>800) {
-      if (startTime) kissCount++;
-      startTime = Date.now();
-      motionHistory = []; tapStreak = 0;
-    }
-    maxTouches = Math.max(maxTouches, valid.length);
-    valid.forEach(t => {
-      spawnHeart(t.clientX, t.clientY);
-      leaveKissMark(t.clientX, t.clientY);
-      if (t.force) { totalPressure += t.force; pressureSamples++; }
-      lips.style.transform = `scale(${1 + (t.force||0.3)*0.2})`;
-    });
-
-    // Detect fast taps (pecks)
-    if (Date.now() - lastTapTime < 300) tapStreak++;
-    lastTapTime = Date.now();
-
-    // Detect swirl / pinch
-    const swirl = detectCircularMotion(valid);
-    motionHistory.push(valid.length>=2 && e.scale<1 ? -30 : swirl);
-
-    vibrate([50,30,50]);
-    playSmooch();
-  }, {passive:false});
-
-  lips.addEventListener('touchmove', e => {
+  vulva.addEventListener('touchmove', e=>{
     e.preventDefault();
-    const avgForce = Array.from(e.touches).reduce((a,t)=>a+(t.force||0.5),0)/e.touches.length;
-    lips.style.transform = `scale(${1 + avgForce*0.25})`;
-  }, {passive:false});
+    const t = e.touches[0];
+    const dx = t.clientX-lastX, dy = t.clientY-lastY;
+    const speed = Math.sqrt(dx*dx + dy*dy) / (Date.now()-lastT+1);
+    speedScore += speed < 0.8 ? 3 : (speed < 1.5 ? 1 : -2);  // reward slow teasing
+    vulva.style.transform = `scale(${1 + (t.force||0.4)*0.15})`;
+    lastX=t.clientX; lastY=t.clientY; lastT=Date.now();
+    if(isOnClit(t.clientX,t.clientY)) clit.style.transform='scale(1.3)';
+  },{passive:false});
 
-  lips.addEventListener('touchend', e => {
-    lips.style.transform = 'scale(1)';
-    if (startTime && e.touches.length===0) {
-      lastUp = Date.now();
-      setTimeout(() => {
-        if (Date.now()-lastUp >= 1200) {
-          rateKiss();
-          vibrate(passion>90 ? [300,100,300] : [100]);
-          setTimeout(reset, 5000);
-        }
-      }, 1500);
+  vulva.addEventListener('touchend', e=>{
+    vulva.style.transform='scale(1)'; clit.style.transform='scale(1)'; clit.style.boxShadow='0 0 30px #ff0066';
+    if(startTime && e.touches.length===0){
+      lastUp=Date.now();
+      setTimeout(()=>{
+        if(Date.now()-lastUp>1200) rateTease();
+      },1500);
     }
   });
 
-  function reset() {
-    scoreEl.innerHTML = '<div style="color:#ff99cc;font-size:24px">Again? I dare you 😈</div>';
-    detailsEl.textContent = '';
-    setTimeout(()=>scoreEl.innerHTML='',3000);
-    kissCount = maxTouches = totalPressure = pressureSamples = passion = 0;
-    motionHistory = []; tapStreak = 0;
-    lips.style.animation = 'breathe 6s infinite ease-in-out';
+  function rateTease(){
+    const duration = (Date.now()-startTime)/1000;
+    const avgPressure = samples? totalPressure/samples : 0.5;
+    const teaseScore = Math.min(100,
+      (speedScore*1.2) + (avgPressure*40) + (clitHits*8) + (duration>8?30:duration*3)
+    );
+
+    bg.style.background = teaseScore>90 ? 'radial-gradient(circle at 50% 60%, #ff0066 0%, #000 70%)' :
+                          teaseScore>70 ? 'radial-gradient(circle at 50% 60%, #cc0055 0%, #11000a 70%)' : 
+                          'radial-gradient(circle at 50% 60%, #ff3366 0%, #000 80%)';
+
+    let title="", emoji="";
+    if(teaseScore>=100){ title="You made me lose control… 💦"; emoji="😩💦"; playGasp(); vibrate([300,100,400,100,500]); }
+    else if(clitHits>15 && speedScore>80){ title="Perfect clit worshipper 👅"; emoji="🙇‍♂️💜"; }
+    else if(speedScore>100){ title="Such a patient tease…"; emoji="😈"; }
+    else if(avgPressure>0.8){ title="Pressed exactly where it counts"; emoji="🔥"; }
+    else if(teaseScore>70){ title="Getting me soaked"; emoji="💦"; }
+    else{ title="Don’t stop now…"; emoji="🥺"; }
+
+    scoreEl.innerHTML = `<div style="font-size:60px">${emoji}</div>${title}`;
+    detailsEl.innerHTML = `
+      Tease Control: ${teaseScore.toFixed(0)}/100<br>
+      Clit Attention: ${clitHits} hits 🔥<br>
+      Slowness Score: ${(speedScore/2).toFixed(0)} (higher = slower = better)<br>
+      Pressure Feel: ${(avgPressure*100).toFixed(0)}%<br>
+      Strokes: ${strokeCount}
+    `;
+    vibrate(teaseScore>90?[200,100,200]:[150]);
+    setTimeout(reset,6000);
+  }
+
+  function reset(){
+    scoreEl.innerHTML='<div style="color:#ff6699;font-size:24px">Again… but slower this time 😏</div>';
+    detailsEl.textContent='';
+    setTimeout(()=>{scoreEl.innerHTML='';},4000);
+    startTime=strokeCount=clitHits=speedScore=0;
   }
 </script>
 </body>
